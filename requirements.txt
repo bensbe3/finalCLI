@@ -1,0 +1,13 @@
+# Python dependencies. Everything else is standard library on purpose.
+jinja2>=3.1        # renders reporter_template.html
+pygments>=2.17     # syntax-highlights the captured code snippets
+rich>=13.7         # nicer terminal output (optional at runtime)
+
+# Development only:
+pytest>=8.0
+
+# NOT installed by pip - install these three external tools separately
+# (the CLI skips any that are missing, it never crashes):
+#   semgrep   -> pip install semgrep      (PHP / JS / Python SAST)
+#   trivy     -> https://trivy.dev        (dependency CVEs)
+#   gitleaks  -> https://gitleaks.io      (secrets)

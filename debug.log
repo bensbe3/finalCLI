@@ -1,0 +1,7 @@
+[0731/164723.405:ERROR:electron\shell\common\node_util.cc:148] Failed to initialize Node.js. {
+   "args": [ "C:\\Program Files\\cursor\\Cursor.exe", "c:\\Program Files\\cursor\\resources\\app\\extensions\\html-language-features\\server\\dist\\node\\htmlServerMain", "--node-ipc", "--clientProcessId=4712" ],
+   "location": ", at node:internal/buffer:1104",
+   "message": "Uncaught RangeError: Failed to allocate memory",
+   "source_line": "  return new FastBuffer(createUnsafeArrayBuffer(size));"
+}
+

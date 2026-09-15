@@ -1,0 +1,10 @@
+{
+  "name": "sample-vuln-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Intentionally vulnerable fixture for the static analysis CLI. Never deploy.",
+  "dependencies": {
+    "lodash": "4.17.15",
+    "minimist": "1.2.0"
+  }
+}

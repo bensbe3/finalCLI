@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<!--
+  reporter_template.html — the shape of report.html.
+
+  RECEIVES:  meta, summary, findings, chart, limitations, standards
+             (all pre-computed by reporter.py — this file holds no logic
+             beyond loops and if-tests)
+  PRODUCES:  the self-contained HTML report
+  CALLED BY: reporter.py (Jinja2)
+
+  Deliberately: inline CSS only, no JavaScript, no web fonts, no external
+  URLs of any kind. The chart is plain <rect> elements whose widths were
+  computed in Python. Open the file anywhere, offline, and it renders.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Static security analysis report</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; padding: 2rem 1.5rem 4rem; color: #1b1f24; background: #f6f7f9;
+         line-height: 1.55; }
+  main { max-width: 62rem; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.15rem; margin: 2.25rem 0 .75rem; padding-bottom: .35rem;
+       border-bottom: 2px solid #dde1e6; }
+  .subtitle { color: #57606a; margin: 0 0 1.5rem; font-size: .92rem; }
+  .card { background: #fff; border: 1px solid #dde1e6; border-radius: 8px;
+          padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #e8ebee; }
+  th { color: #57606a; font-weight: 600; }
+  .tag { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .03em;
+         padding: .15rem .5rem; border-radius: 999px; color: #fff; text-transform: uppercase; }
+  .pill { display: inline-block; font-size: .75rem; padding: .15rem .5rem; border-radius: 999px;
+          background: #eef1f4; color: #3d454e; margin-right: .35rem; }
+  .finding { background: #fff; border: 1px solid #dde1e6; border-left-width: 5px;
+             border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .finding h3 { font-size: 1rem; margin: 0 0 .15rem; font-family: ui-monospace, Consolas, monospace; }
+  .finding-id { color: #6b747d; font-family: inherit; font-weight: 600; }
+  .finding .msg { margin: .5rem 0 .75rem; }
+  .meta-line { font-size: .8rem; color: #57606a; margin: 0 0 .5rem; }
+  pre.snippet { background: #fbfcfd; border: 1px solid #e3e7eb; border-radius: 6px;
+                padding: .6rem 0; margin: .75rem 0; overflow-x: auto;
+                font-family: ui-monospace, Consolas, "Courier New", monospace;
+                font-size: .82rem; line-height: 1.5; }
+  .code-line { padding: 0 .75rem; white-space: pre; }
+  .gutter { color: #97a0aa; user-select: none; padding-right: .9rem; }
+  .advice { font-size: .87rem; margin: .35rem 0; }
+  .advice b { color: #3d454e; }
+  ul.plain { margin: .5rem 0; padding-left: 1.2rem; }
+  ul.plain li { margin-bottom: .45rem; font-size: .89rem; }
+  .empty { color: #57606a; font-style: italic; }
+  .banner { background: #fff8e1; border: 1px solid #e0c65a; border-left: 5px solid #b98700;
+            border-radius: 8px; padding: .9rem 1.25rem; margin-bottom: 1.5rem; font-size: .92rem; }
+  .banner ul.plain li { margin-bottom: .2rem; }
+  .banner.urgent { background: #fff1f3; border-color: #e2879a; border-left-color: #b3123a; }
+  .exploit-note { font-size: .84rem; margin: .35rem 0 .1rem; color: #3d454e; }
+  .index-wrap { overflow-x: auto; }
+  .index-table td { vertical-align: top; }
+  .index-table .location { font-family: ui-monospace, Consolas, monospace; font-weight: 600; }
+  .fact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+               gap: .35rem 1rem; margin: .65rem 0; font-size: .84rem; }
+  .fact-grid div { overflow-wrap: anywhere; }
+  .fact-grid b { color: #3d454e; }
+  .coverage-note { margin: .8rem 0 0; font-size: .84rem; color: #57606a; }
+  @media (max-width: 640px) { .fact-grid { grid-template-columns: 1fr; } }
+  footer { max-width: 62rem; margin: 2.5rem auto 0; font-size: .8rem; color: #6b747d; }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>Static security analysis report</h1>
+  <p class="subtitle">
+    Target: <b>{{ meta.target }}</b> &middot; generated {{ meta.generated_at }}
+    {%- if meta.duration_seconds is defined %} &middot; scan took {{ meta.duration_seconds }}s{% endif %}
+    &middot; <b>{{ coverage.status }}</b>
+  </p>
+
+  <!-- A scan that was skipped or that broke covers NO ground. Saying this
+       first stops the reader treating "0 findings" as "nothing is wrong". -->
+  {% if incomplete %}
+  <div class="banner">
+    <b>This report is incomplete.</b>
+    {{ incomplete | length }} scan(s) did not run, so those areas were not
+    checked at all. Zero findings in them means <em>unknown</em>, not clean.
+    <ul class="plain">
+      {% for scan in incomplete %}<li><b>{{ scan.label }}</b> — {{ scan.status }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if partial %}
+  <div class="banner">
+    <b>Some scans were only partial.</b>
+    Findings from successfully analysed files are included, but the tool
+    reported parser errors, timeouts, or other coverage warnings.
+    <ul class="plain">
+      {% for scan in partial %}
+      <li><b>{{ scan.label }}</b> — {{ scan.status }}
+        {% if scan.warnings %}
+        <ul class="plain">
+          {% for warning in scan.warnings %}<li>{{ warning }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- The one thing a reader should act on first: not "what is severe in
+       general", but "what is being attacked in the real world right now". -->
+  {% if summary.actively_exploited %}
+  <div class="banner urgent">
+    <b>Fix these first: {{ summary.actively_exploited }} finding(s) are being
+    exploited in the wild.</b>
+    CISA lists them in its Known Exploited Vulnerabilities catalogue, which
+    means confirmed real-world attacks — not a prediction. They are shown at
+    the top of the Findings list below.
+  </div>
+  {% endif %}
+
+  <!-- ============ short result summary ============ -->
+  <h2>At a glance</h2>
+  <div class="card">
+    <p class="meta-line"><b>{{ summary.total }}</b> finding(s) after removing duplicates across tools.</p>
+    <p class="meta-line">
+      By severity:
+      {% for severity, count in summary.by_severity.items() %}<span class="pill">{{ severity }}: {{ count }}</span>{% endfor %}
+      <br>By tool:
+      {% for tool, count in summary.by_tool.items() %}<span class="pill">{{ tool }}: {{ count }}</span>{% endfor %}
+      {% if not summary.by_tool %}<span class="empty">no tool reported findings</span>{% endif %}
+      <br>By confidence:
+      {% for level, count in summary.by_confidence.items() %}<span class="pill">{{ level }}: {{ count }}</span>{% endfor %}
+      <br>By real-world exploitation:
+      {% for status, count in summary.by_exploitation.items() %}<span class="pill">{{ status }}: {{ count }}</span>{% endfor %}
+    </p>
+    <p class="meta-line" style="margin-top:.5rem">
+      Exploitation data source: {{ meta.exploitation_source }}
+      {% if meta.kev_available is defined and meta.epss_available is defined %}
+      &mdash; CISA KEV: {{ "available" if meta.kev_available else "unavailable" }};
+      FIRST EPSS: {{ "available" if meta.epss_available else "unavailable" }}
+      {% endif %}
+      {% if not meta.exploitation_available %}
+      &mdash; so no finding below can be called "not exploited"; the honest word is <em>unknown</em>.
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- ============ compact, location-first triage index ============ -->
+  <h2>Quick findings list</h2>
+  {% if findings_index %}
+  <div class="card index-wrap">
+    <table class="index-table">
+      <tr>
+        <th>#</th><th>Severity</th><th>File and line</th><th>Tool / scan</th>
+        <th>Rule or advisory</th><th>Tool explanation</th>
+      </tr>
+      {% for row in findings_index %}
+      <tr>
+        <td>{{ row.number }}</td>
+        <td>{{ row.severity }}</td>
+        <td class="location">{{ row.location }}</td>
+        <td>{{ row.tool }}{% if row.scan_type %} / {{ row.scan_type }}{% endif %}</td>
+        <td>{{ row.identity }}</td>
+        <td>{{ row.explanation }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% else %}
+  <div class="card"><p class="empty">There are no findings to index.</p></div>
+  {% endif %}
+
+  <!-- ============ full finding evidence ============ -->
+  <h2>Findings</h2>
+  {% if not findings %}
+    <div class="card">
+      <p class="empty">No findings were reported by the tools that ran. That is not
+      proof the code is safe — see Limitations below.</p>
+    </div>
+  {% endif %}
+
+  {% for finding in findings %}
+  <div class="finding" style="border-left-color: {{ finding.severity_colour }}">
+    <h3><span class="finding-id">Finding {{ loop.index }} —</span> {{ finding.location }}</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: {{ finding.severity_colour }}">{{ finding.severity }}</span>
+      {% if finding.kev or finding.exploit_status == "likely exploited" %}
+      <span class="tag" style="background: {{ finding.exploit_colour }}">{{ finding.exploit_status }}</span>
+      {% endif %}
+      <span class="pill">confidence: {{ finding.confidence }}</span>
+      <span class="pill">found by: {{ finding.tool }}</span>
+      <span class="pill">{{ finding.cwe }}</span>
+      <span class="pill">{{ finding.owasp }}</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> {{ finding.file }}</div>
+      <div><b>Line:</b> {% if finding.line %}{{ finding.line }}{% else %}not available{% endif %}</div>
+      <div><b>Detected by:</b> {{ finding.tool }}</div>
+      <div><b>Scan:</b> {{ finding.scan_type or "unknown" }} — {{ finding.scan_status }}</div>
+      <div><b>Rule / advisory:</b> {{ finding.identity }}</div>
+      {% if finding.advisory_aliases %}
+      <div><b>Equivalent advisory IDs:</b> {{ finding.advisory_aliases | join(", ") }}</div>
+      {% endif %}
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    {% if finding.is_dependency %}
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    <p class="advice">
+      <b>Direct usage evidence:</b> {{ finding.usage_status }}.
+      {{ finding.usage_note }}
+      {% if finding.usage_evidence %}
+      Seen at {{ finding.usage_evidence | join(", ") }}.
+      {% endif %}
+    </p>
+    {% endif %}
+    <p class="msg"><b>Tool explanation:</b> {{ finding.message }}</p>
+
+    {% if finding.snippet %}
+    <pre class="snippet">{{ finding.snippet }}</pre>
+    {% else %}
+    <p class="meta-line empty">No code snippet captured for this finding.</p>
+    {% endif %}
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> {{ finding.exploit_status }}
+      {%- if finding.epss_percent %} (EPSS {{ finding.epss_percent }}
+      {%- if finding.epss_percentile %}, {{ finding.epss_percentile }}{% endif %}){% endif %}
+      — {{ finding.exploit_note }}
+    </p>
+    <p class="advice"><b>Remediation:</b> {{ finding.remediation }}</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> {{ finding.scenario }}</p>
+    {% if not finding.is_dependency %}<p class="advice"><b>Rule:</b> {{ finding.rule_id }}</p>{% endif %}
+  </div>
+  {% endfor %}
+
+  <!-- Coverage follows the actionable findings, but remains fully auditable. -->
+  <h2>What was scanned</h2>
+  <div class="card">
+    <p class="meta-line">
+      {{ meta.files_collected }} file(s) collected. {{ coverage.status }}.
+    </p>
+    <table>
+      <tr><th>Scan / tool</th><th>Rules or data</th><th>Files routed / confirmed</th><th>Status</th><th>Findings</th></tr>
+      {% for scan in meta.scans %}
+      <tr>
+        <td>{{ scan.label }}<br><span class="empty">{{ scan.tool }}</span></td>
+        <td>
+          {% if scan.rulesets %}
+            {{ scan.rulesets | join(", ") }}
+          {% elif scan.tool == "trivy" %}
+            Trivy advisory database
+          {% elif scan.tool == "gitleaks" %}
+            Gitleaks default rules
+          {% else %}
+            tool default
+          {% endif %}
+        </td>
+        <td>{{ scan.files_selected }} /
+          {% if scan.files_scanned is defined and scan.files_scanned is not none %}{{ scan.files_scanned }}{% else %}not reported{% endif %}
+        </td>
+        <td>{{ scan.status }}</td>
+        <td>{{ scan.findings }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% if coverage.unrouted_file_types %}
+    <p class="coverage-note">
+      <b>Not routed to a selected code/dependency scanner:</b>
+      {% for item in coverage.unrouted_file_types %}
+      <span class="pill">{{ item.file_type }}: {{ item.files }}</span>
+      {% endfor %}
+      <br>This is a visible coverage boundary, not evidence that these files
+      are safe or vulnerable.
+    </p>
+    {% endif %}
+    {% if meta.files_by_type %}
+    <details>
+      <summary>Show all collected file groups</summary>
+      <p class="coverage-note">
+        {% for file_type, count in meta.files_by_type.items() %}
+        <span class="pill">{{ file_type }}: {{ count }}</span>
+        {% endfor %}
+      </p>
+    </details>
+    {% endif %}
+  </div>
+
+  <!-- ============ honesty ============ -->
+  <h2>Limitations</h2>
+  <div class="card">
+    <ul class="plain">
+      {% for limitation in limitations %}<li>{{ limitation }}</li>{% endfor %}
+    </ul>
+  </div>
+
+  <h2>Standards referenced</h2>
+  <div class="card">
+    <ul class="plain">
+      {% for standard in standards %}<li>{{ standard }}</li>{% endfor %}
+    </ul>
+  </div>
+
+</main>
+<footer>
+  Generated by a static analysis CLI that orchestrates Semgrep, Trivy and Gitleaks.
+  Findings are collected and consolidated, not independently verified. Triage manually.
+</footer>
+</body>
+</html>

@@ -1,0 +1,209 @@
+{
+  "meta": {
+    "target": "C:\\Users\\Moham\\Downloads\\syndique",
+    "generated_at": "2026-08-14 14:45:17",
+    "duration_seconds": 28.14,
+    "files_collected": 316,
+    "files_by_type": {
+      "(no extension)": 22,
+      ".css": 3,
+      ".example": 1,
+      ".html": 2,
+      ".ico": 1,
+      ".js": 2,
+      ".json": 12,
+      ".lock": 1,
+      ".log": 2,
+      ".md": 3,
+      ".php": 178,
+      ".png": 1,
+      ".sqlite": 1,
+      ".svg": 4,
+      ".toml": 1,
+      ".ts": 22,
+      ".tsx": 55,
+      ".txt": 2,
+      ".xml": 1,
+      "composer.lock": 1,
+      "package-lock.json": 1
+    },
+    "scans": [
+      {
+        "label": "Deep code scan (CodeQL)",
+        "scan_type": "codeql",
+        "tool": "codeql",
+        "rulesets": [
+          "codeql/javascript-queries:codeql-suites/javascript-security-extended.qls"
+        ],
+        "scope": "whole target directory (shared excludes applied)",
+        "files_selected": 79,
+        "files_scanned": null,
+        "warnings": [],
+        "status": "FAILED - codeql could not finish javascript create (exit 2: Initializing database at C:\\Users\\Moham\\Downloads\\FINALCLI\\reports\\codeql-db-javascript. Running build command: [] Running command in C:\\Users\\Moham\\Downloads\\syndique: [C:\\Users\\Moham\\Tools\\codeql-cli\\codeql\\javascript\\tools\\autobuild.cmd] A fatal error occurred: Exit status 1 from command: [C:\\Users\\Moham\\Tools\\codeql-cli\\codeql\\tools\\win64\\runner.exe, cmd.exe, /C, type, NUL, &&, C:\\Users\\Moham\\)",
+        "findings": 0
+      }
+    ],
+    "scanner_declarations": [
+      {
+        "scan_type": "codeql",
+        "label": "Deep code scan (CodeQL)",
+        "file_types": [
+          ".cjs",
+          ".js",
+          ".jsx",
+          ".mjs",
+          ".py",
+          ".ts",
+          ".tsx"
+        ]
+      }
+    ],
+    "scan_status_by_type": {
+      "codeql": "FAILED - codeql could not finish javascript create (exit 2: Initializing database at C:\\Users\\Moham\\Downloads\\FINALCLI\\reports\\codeql-db-javascript. Running build command: [] Running command in C:\\Users\\Moham\\Downloads\\syndique: [C:\\Users\\Moham\\Tools\\codeql-cli\\codeql\\javascript\\tools\\autobuild.cmd] A fatal error occurred: Exit status 1 from command: [C:\\Users\\Moham\\Tools\\codeql-cli\\codeql\\tools\\win64\\runner.exe, cmd.exe, /C, type, NUL, &&, C:\\Users\\Moham\\)"
+    },
+    "exploitation_source": "No CVE findings, so no lookup was needed.",
+    "exploitation_available": false,
+    "kev_available": false,
+    "epss_available": false
+  },
+  "summary": {
+    "total": 0,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 0,
+      "INFO": 0
+    },
+    "by_tool": {},
+    "by_confidence": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "actively_exploited": 0,
+    "by_exploitation": {}
+  },
+  "incomplete_scans": [
+    {
+      "label": "Deep code scan (CodeQL)",
+      "scan_type": "codeql",
+      "tool": "codeql",
+      "rulesets": [
+        "codeql/javascript-queries:codeql-suites/javascript-security-extended.qls"
+      ],
+      "scope": "whole target directory (shared excludes applied)",
+      "files_selected": 79,
+      "files_scanned": null,
+      "warnings": [],
+      "status": "FAILED - codeql could not finish javascript create (exit 2: Initializing database at C:\\Users\\Moham\\Downloads\\FINALCLI\\reports\\codeql-db-javascript. Running build command: [] Running command in C:\\Users\\Moham\\Downloads\\syndique: [C:\\Users\\Moham\\Tools\\codeql-cli\\codeql\\javascript\\tools\\autobuild.cmd] A fatal error occurred: Exit status 1 from command: [C:\\Users\\Moham\\Tools\\codeql-cli\\codeql\\tools\\win64\\runner.exe, cmd.exe, /C, type, NUL, &&, C:\\Users\\Moham\\)",
+      "findings": 0
+    }
+  ],
+  "partial_scans": [],
+  "coverage": {
+    "selected_scans_completed": false,
+    "status": "selected scans incomplete",
+    "unrouted_file_types": [
+      {
+        "file_type": ".php",
+        "files": 178
+      },
+      {
+        "file_type": "(no extension)",
+        "files": 22
+      },
+      {
+        "file_type": ".json",
+        "files": 12
+      },
+      {
+        "file_type": ".svg",
+        "files": 4
+      },
+      {
+        "file_type": ".css",
+        "files": 3
+      },
+      {
+        "file_type": ".md",
+        "files": 3
+      },
+      {
+        "file_type": ".html",
+        "files": 2
+      },
+      {
+        "file_type": ".log",
+        "files": 2
+      },
+      {
+        "file_type": ".txt",
+        "files": 2
+      },
+      {
+        "file_type": ".example",
+        "files": 1
+      },
+      {
+        "file_type": ".ico",
+        "files": 1
+      },
+      {
+        "file_type": ".lock",
+        "files": 1
+      },
+      {
+        "file_type": ".png",
+        "files": 1
+      },
+      {
+        "file_type": ".sqlite",
+        "files": 1
+      },
+      {
+        "file_type": ".toml",
+        "files": 1
+      },
+      {
+        "file_type": ".xml",
+        "files": 1
+      },
+      {
+        "file_type": "composer.lock",
+        "files": 1
+      },
+      {
+        "file_type": "package-lock.json",
+        "files": 1
+      }
+    ],
+    "no_matching_scans": []
+  },
+  "findings_index": [],
+  "findings": [],
+  "limitations": [
+    "This is STATIC analysis only. Nothing was executed, no requests were sent, and no running system was tested. A finding describes code as written, not proven exploitability.",
+    "Detection is tool- and pattern-based, so FALSE POSITIVES are expected. Every finding needs manual triage before it is treated as a real vulnerability.",
+    "Absence of findings is not proof of safety (false negatives). Coverage is limited to the file types routed to the tools that were installed at scan time.",
+    "Direct dependency references are evidence of package use, not full call-path reachability. No direct reference found is NOT proof that a framework or transitive dependency cannot load the vulnerable code.",
+    "CodeQL is used for deep JS/TS and Python analysis only. It does not support PHP; a PHP-only project will show CodeQL as 'no matching files', which is coverage information, not a clean PHP result.",
+    "Severity is reported as the tool assigned it. It reflects the general class of issue, not the business impact in this specific application.",
+    "Attack scenarios in this report are ILLUSTRATIVE textbook descriptions included for explanation only. They were not attempted against this code.",
+    "This report quotes excerpts of the scanned source code. Secret values found by the secrets scan are masked, but the report should still be treated as SENSITIVE and shared with the same care as the code itself.",
+    "EPSS is a PREDICTION about the world, not a measurement of this application. It estimates the chance a vulnerability is exploited somewhere in the next 30 days. This report labels scores of 10% or more as 'likely exploited' for prioritisation. A low score is a reason to deprioritise, never a guarantee of safety.",
+    "The CISA KEV catalogue lists vulnerabilities CONFIRMED to be exploited in the wild, so being listed is strong evidence. It is not exhaustive, however - absence from KEV does not mean nobody is exploiting the issue.",
+    "Exploitation data exists only for findings with a CVE id or an explicit CVE alias supplied by Trivy. Other findings are marked 'not applicable', which is NOT a judgement that they are low risk."
+  ],
+  "standards_referenced": [
+    "OWASP Top 10:2021 - category mapping for each finding",
+    "CWE Top 25 - the weakness identifiers used throughout",
+    "MITRE CAPEC - attack-pattern context behind the illustrative scenarios",
+    "OWASP ASVS - verification requirements to triage findings against",
+    "ISO/IEC 27034 - application security management framework",
+    "NIST SSDF (SP 800-218) - secure software development practices",
+    "NIST NVD - the CVE data source behind dependency findings",
+    "FIRST EPSS - exploit prediction scores used to prioritise CVE findings",
+    "CISA KEV - catalogue of vulnerabilities known to be exploited in the wild"
+  ]
+}

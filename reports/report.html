@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!--
+  reporter_template.html — the shape of report.html.
+
+  RECEIVES:  meta, summary, findings, chart, limitations, standards
+             (all pre-computed by reporter.py — this file holds no logic
+             beyond loops and if-tests)
+  PRODUCES:  the self-contained HTML report
+  CALLED BY: reporter.py (Jinja2)
+
+  Deliberately: inline CSS only, no JavaScript, no web fonts, no external
+  URLs of any kind. The chart is plain <rect> elements whose widths were
+  computed in Python. Open the file anywhere, offline, and it renders.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Static security analysis report</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; padding: 2rem 1.5rem 4rem; color: #1b1f24; background: #f6f7f9;
+         line-height: 1.55; }
+  main { max-width: 62rem; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.15rem; margin: 2.25rem 0 .75rem; padding-bottom: .35rem;
+       border-bottom: 2px solid #dde1e6; }
+  .subtitle { color: #57606a; margin: 0 0 1.5rem; font-size: .92rem; }
+  .card { background: #fff; border: 1px solid #dde1e6; border-radius: 8px;
+          padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #e8ebee; }
+  th { color: #57606a; font-weight: 600; }
+  .tag { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .03em;
+         padding: .15rem .5rem; border-radius: 999px; color: #fff; text-transform: uppercase; }
+  .pill { display: inline-block; font-size: .75rem; padding: .15rem .5rem; border-radius: 999px;
+          background: #eef1f4; color: #3d454e; margin-right: .35rem; }
+  .finding { background: #fff; border: 1px solid #dde1e6; border-left-width: 5px;
+             border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .finding h3 { font-size: 1rem; margin: 0 0 .15rem; font-family: ui-monospace, Consolas, monospace; }
+  .finding-id { color: #6b747d; font-family: inherit; font-weight: 600; }
+  .finding .msg { margin: .5rem 0 .75rem; }
+  .meta-line { font-size: .8rem; color: #57606a; margin: 0 0 .5rem; }
+  pre.snippet { background: #fbfcfd; border: 1px solid #e3e7eb; border-radius: 6px;
+                padding: .6rem 0; margin: .75rem 0; overflow-x: auto;
+                font-family: ui-monospace, Consolas, "Courier New", monospace;
+                font-size: .82rem; line-height: 1.5; }
+  .code-line { padding: 0 .75rem; white-space: pre; }
+  .gutter { color: #97a0aa; user-select: none; padding-right: .9rem; }
+  .advice { font-size: .87rem; margin: .35rem 0; }
+  .advice b { color: #3d454e; }
+  ul.plain { margin: .5rem 0; padding-left: 1.2rem; }
+  ul.plain li { margin-bottom: .45rem; font-size: .89rem; }
+  .empty { color: #57606a; font-style: italic; }
+  .banner { background: #fff8e1; border: 1px solid #e0c65a; border-left: 5px solid #b98700;
+            border-radius: 8px; padding: .9rem 1.25rem; margin-bottom: 1.5rem; font-size: .92rem; }
+  .banner ul.plain li { margin-bottom: .2rem; }
+  .banner.urgent { background: #fff1f3; border-color: #e2879a; border-left-color: #b3123a; }
+  .exploit-note { font-size: .84rem; margin: .35rem 0 .1rem; color: #3d454e; }
+  .index-wrap { overflow-x: auto; }
+  .index-table td { vertical-align: top; }
+  .index-table .location { font-family: ui-monospace, Consolas, monospace; font-weight: 600; }
+  .fact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+               gap: .35rem 1rem; margin: .65rem 0; font-size: .84rem; }
+  .fact-grid div { overflow-wrap: anywhere; }
+  .fact-grid b { color: #3d454e; }
+  .coverage-note { margin: .8rem 0 0; font-size: .84rem; color: #57606a; }
+  @media (max-width: 640px) { .fact-grid { grid-template-columns: 1fr; } }
+  footer { max-width: 62rem; margin: 2.5rem auto 0; font-size: .8rem; color: #6b747d; }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>Static security analysis report</h1>
+  <p class="subtitle">
+    Target: <b>C:\Users\Moham\Downloads\syndique</b> &middot; generated 2026-08-14 14:45:17 &middot; scan took 28.14s
+    &middot; <b>selected scans incomplete</b>
+  </p>
+
+  <!-- A scan that was skipped or that broke covers NO ground. Saying this
+       first stops the reader treating "0 findings" as "nothing is wrong". -->
+  
+  <div class="banner">
+    <b>This report is incomplete.</b>
+    1 scan(s) did not run, so those areas were not
+    checked at all. Zero findings in them means <em>unknown</em>, not clean.
+    <ul class="plain">
+      <li><b>Deep code scan (CodeQL)</b> — FAILED - codeql could not finish javascript create (exit 2: Initializing database at C:\Users\Moham\Downloads\FINALCLI\reports\codeql-db-javascript. Running build command: [] Running command in C:\Users\Moham\Downloads\syndique: [C:\Users\Moham\Tools\codeql-cli\codeql\javascript\tools\autobuild.cmd] A fatal error occurred: Exit status 1 from command: [C:\Users\Moham\Tools\codeql-cli\codeql\tools\win64\runner.exe, cmd.exe, /C, type, NUL, &amp;&amp;, C:\Users\Moham\)</li>
+    </ul>
+  </div>
+  
+
+  
+
+  <!-- The one thing a reader should act on first: not "what is severe in
+       general", but "what is being attacked in the real world right now". -->
+  
+
+  <!-- ============ short result summary ============ -->
+  <h2>At a glance</h2>
+  <div class="card">
+    <p class="meta-line"><b>0</b> finding(s) after removing duplicates across tools.</p>
+    <p class="meta-line">
+      By severity:
+      <span class="pill">CRITICAL: 0</span><span class="pill">HIGH: 0</span><span class="pill">MEDIUM: 0</span><span class="pill">LOW: 0</span><span class="pill">INFO: 0</span>
+      <br>By tool:
+      
+      <span class="empty">no tool reported findings</span>
+      <br>By confidence:
+      <span class="pill">high: 0</span><span class="pill">medium: 0</span><span class="pill">low: 0</span>
+      <br>By real-world exploitation:
+      
+    </p>
+    <p class="meta-line" style="margin-top:.5rem">
+      Exploitation data source: No CVE findings, so no lookup was needed.
+      
+      &mdash; CISA KEV: unavailable;
+      FIRST EPSS: unavailable
+      
+      
+      &mdash; so no finding below can be called "not exploited"; the honest word is <em>unknown</em>.
+      
+    </p>
+  </div>
+
+  <!-- ============ compact, location-first triage index ============ -->
+  <h2>Quick findings list</h2>
+  
+  <div class="card"><p class="empty">There are no findings to index.</p></div>
+  
+
+  <!-- ============ full finding evidence ============ -->
+  <h2>Findings</h2>
+  
+    <div class="card">
+      <p class="empty">No findings were reported by the tools that ran. That is not
+      proof the code is safe — see Limitations below.</p>
+    </div>
+  
+
+  
+
+  <!-- Coverage follows the actionable findings, but remains fully auditable. -->
+  <h2>What was scanned</h2>
+  <div class="card">
+    <p class="meta-line">
+      316 file(s) collected. selected scans incomplete.
+    </p>
+    <table>
+      <tr><th>Scan / tool</th><th>Rules or data</th><th>Files routed / confirmed</th><th>Status</th><th>Findings</th></tr>
+      
+      <tr>
+        <td>Deep code scan (CodeQL)<br><span class="empty">codeql</span></td>
+        <td>
+          
+            codeql/javascript-queries:codeql-suites/javascript-security-extended.qls
+          
+        </td>
+        <td>79 /
+          not reported
+        </td>
+        <td>FAILED - codeql could not finish javascript create (exit 2: Initializing database at C:\Users\Moham\Downloads\FINALCLI\reports\codeql-db-javascript. Running build command: [] Running command in C:\Users\Moham\Downloads\syndique: [C:\Users\Moham\Tools\codeql-cli\codeql\javascript\tools\autobuild.cmd] A fatal error occurred: Exit status 1 from command: [C:\Users\Moham\Tools\codeql-cli\codeql\tools\win64\runner.exe, cmd.exe, /C, type, NUL, &amp;&amp;, C:\Users\Moham\)</td>
+        <td>0</td>
+      </tr>
+      
+    </table>
+    
+    <p class="coverage-note">
+      <b>Not routed to a selected code/dependency scanner:</b>
+      
+      <span class="pill">.php: 178</span>
+      
+      <span class="pill">(no extension): 22</span>
+      
+      <span class="pill">.json: 12</span>
+      
+      <span class="pill">.svg: 4</span>
+      
+      <span class="pill">.css: 3</span>
+      
+      <span class="pill">.md: 3</span>
+      
+      <span class="pill">.html: 2</span>
+      
+      <span class="pill">.log: 2</span>
+      
+      <span class="pill">.txt: 2</span>
+      
+      <span class="pill">.example: 1</span>
+      
+      <span class="pill">.ico: 1</span>
+      
+      <span class="pill">.lock: 1</span>
+      
+      <span class="pill">.png: 1</span>
+      
+      <span class="pill">.sqlite: 1</span>
+      
+      <span class="pill">.toml: 1</span>
+      
+      <span class="pill">.xml: 1</span>
+      
+      <span class="pill">composer.lock: 1</span>
+      
+      <span class="pill">package-lock.json: 1</span>
+      
+      <br>This is a visible coverage boundary, not evidence that these files
+      are safe or vulnerable.
+    </p>
+    
+    
+    <details>
+      <summary>Show all collected file groups</summary>
+      <p class="coverage-note">
+        
+        <span class="pill">(no extension): 22</span>
+        
+        <span class="pill">.css: 3</span>
+        
+        <span class="pill">.example: 1</span>
+        
+        <span class="pill">.html: 2</span>
+        
+        <span class="pill">.ico: 1</span>
+        
+        <span class="pill">.js: 2</span>
+        
+        <span class="pill">.json: 12</span>
+        
+        <span class="pill">.lock: 1</span>
+        
+        <span class="pill">.log: 2</span>
+        
+        <span class="pill">.md: 3</span>
+        
+        <span class="pill">.php: 178</span>
+        
+        <span class="pill">.png: 1</span>
+        
+        <span class="pill">.sqlite: 1</span>
+        
+        <span class="pill">.svg: 4</span>
+        
+        <span class="pill">.toml: 1</span>
+        
+        <span class="pill">.ts: 22</span>
+        
+        <span class="pill">.tsx: 55</span>
+        
+        <span class="pill">.txt: 2</span>
+        
+        <span class="pill">.xml: 1</span>
+        
+        <span class="pill">composer.lock: 1</span>
+        
+        <span class="pill">package-lock.json: 1</span>
+        
+      </p>
+    </details>
+    
+  </div>
+
+  <!-- ============ honesty ============ -->
+  <h2>Limitations</h2>
+  <div class="card">
+    <ul class="plain">
+      <li>This is STATIC analysis only. Nothing was executed, no requests were sent, and no running system was tested. A finding describes code as written, not proven exploitability.</li><li>Detection is tool- and pattern-based, so FALSE POSITIVES are expected. Every finding needs manual triage before it is treated as a real vulnerability.</li><li>Absence of findings is not proof of safety (false negatives). Coverage is limited to the file types routed to the tools that were installed at scan time.</li><li>Direct dependency references are evidence of package use, not full call-path reachability. No direct reference found is NOT proof that a framework or transitive dependency cannot load the vulnerable code.</li><li>CodeQL is used for deep JS/TS and Python analysis only. It does not support PHP; a PHP-only project will show CodeQL as &#39;no matching files&#39;, which is coverage information, not a clean PHP result.</li><li>Severity is reported as the tool assigned it. It reflects the general class of issue, not the business impact in this specific application.</li><li>Attack scenarios in this report are ILLUSTRATIVE textbook descriptions included for explanation only. They were not attempted against this code.</li><li>This report quotes excerpts of the scanned source code. Secret values found by the secrets scan are masked, but the report should still be treated as SENSITIVE and shared with the same care as the code itself.</li><li>EPSS is a PREDICTION about the world, not a measurement of this application. It estimates the chance a vulnerability is exploited somewhere in the next 30 days. This report labels scores of 10% or more as &#39;likely exploited&#39; for prioritisation. A low score is a reason to deprioritise, never a guarantee of safety.</li><li>The CISA KEV catalogue lists vulnerabilities CONFIRMED to be exploited in the wild, so being listed is strong evidence. It is not exhaustive, however - absence from KEV does not mean nobody is exploiting the issue.</li><li>Exploitation data exists only for findings with a CVE id or an explicit CVE alias supplied by Trivy. Other findings are marked &#39;not applicable&#39;, which is NOT a judgement that they are low risk.</li>
+    </ul>
+  </div>
+
+  <h2>Standards referenced</h2>
+  <div class="card">
+    <ul class="plain">
+      <li>OWASP Top 10:2021 - category mapping for each finding</li><li>CWE Top 25 - the weakness identifiers used throughout</li><li>MITRE CAPEC - attack-pattern context behind the illustrative scenarios</li><li>OWASP ASVS - verification requirements to triage findings against</li><li>ISO/IEC 27034 - application security management framework</li><li>NIST SSDF (SP 800-218) - secure software development practices</li><li>NIST NVD - the CVE data source behind dependency findings</li><li>FIRST EPSS - exploit prediction scores used to prioritise CVE findings</li><li>CISA KEV - catalogue of vulnerabilities known to be exploited in the wild</li>
+    </ul>
+  </div>
+
+</main>
+<footer>
+  Generated by a static analysis CLI that orchestrates Semgrep, Trivy and Gitleaks.
+  Findings are collected and consolidated, not independently verified. Triage manually.
+</footer>
+</body>
+</html>

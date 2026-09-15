@@ -1,0 +1,179 @@
+---
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/AngularJS/DisablingSce.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/AngularJS/DoubleCompilation.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/AngularJS/InsecureUrlWhitelist.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Electron/AllowRunningInsecureContent.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Electron/DisablingWebSecurity.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Performance/PolynomialReDoS.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Performance/ReDoS.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/RegExp/IdentityReplacement.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-020/IncompleteHostnameRegExp.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-020/IncompleteUrlSchemeCheck.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-020/IncompleteUrlSubstringSanitization.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-020/IncorrectSuffixCheck.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-020/OverlyLargeRange.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-020/UselessRegExpCharacterEscape.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-022/TaintedPath.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-022/ZipSlip.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-073/TemplateObjectInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-078/CommandInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-078/SecondOrderCommandInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-078/ShellCommandInjectionFromEnvironment.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-078/UnsafeShellCommandConstruction.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-078/UselessUseOfCat.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-079/ExceptionXss.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-079/ReflectedXss.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-079/StoredXss.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-079/UnsafeHtmlConstruction.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-079/UnsafeJQueryPlugin.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-079/Xss.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-079/XssThroughDom.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-089/SqlInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-094/CodeInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-094/ImproperCodeSanitization.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-094/UnsafeDynamicMethodAccess.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-1004/ClientExposedCookie.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-116/BadTagFilter.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-116/DoubleEscaping.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-116/IncompleteHtmlAttributeSanitization.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-116/IncompleteMultiCharacterSanitization.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-116/IncompleteSanitization.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-116/UnsafeHtmlExpansion.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-134/TaintedFormatString.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-1427/SystemPromptInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-178/CaseSensitiveMiddlewarePath.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-200/PrivateFileExposure.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-201/PostMessageStar.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-209/StackTraceExposure.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-295/DisablingCertificateValidation.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-300/InsecureDependencyResolution.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-312/BuildArtifactLeak.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-312/CleartextLogging.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-312/CleartextStorage.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-326/InsufficientKeySize.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-327/BadRandomness.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-327/BrokenCryptoAlgorithm.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-338/InsecureRandomness.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-346/CorsMisconfigurationForCredentials.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-347/MissingJWTKeyVerification.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-352/MissingCsrfMiddleware.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-400/DeepObjectResourceExhaustion.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-502/UnsafeDeserialization.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-598/SensitiveGetQuery.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-601/ClientSideUrlRedirect.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-601/ServerSideUrlRedirect.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-611/Xxe.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-614/ClearTextCookie.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-640/HostHeaderPoisoningInEmailGeneration.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-643/XpathInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-693/InsecureHelmet.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-730/RegExpInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-730/ServerCrash.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-754/UnvalidatedDynamicMethodCall.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-770/MissingRateLimiting.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-770/ResourceExhaustion.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-776/XmlBomb.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-829/InsecureDownload.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-830/FunctionalityFromUntrustedDomain.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-830/FunctionalityFromUntrustedSource.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-834/LoopBoundInjection.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-843/TypeConfusionThroughParameterTampering.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-915/PrototypePollutingAssignment.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-915/PrototypePollutingFunction.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-915/PrototypePollutingMergeCall.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-916/InsufficientPasswordHash.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-918/RequestForgery.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Security/CWE-942/CorsPermissiveConfiguration.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Diagnostics/ExtractedFiles.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Diagnostics/ExtractionErrors.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Summary/LinesOfCode.ql
+ -
+  query: C:/Users/Moham/.codeql/packages/codeql/javascript-queries/2.4.3/Summary/LinesOfUserCode.ql

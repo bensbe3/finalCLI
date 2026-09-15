@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<!--
+  reporter_template.html — the shape of report.html.
+
+  RECEIVES:  meta, summary, findings, chart, limitations, standards
+             (all pre-computed by reporter.py — this file holds no logic
+             beyond loops and if-tests)
+  PRODUCES:  the self-contained HTML report
+  CALLED BY: reporter.py (Jinja2)
+
+  Deliberately: inline CSS only, no JavaScript, no web fonts, no external
+  URLs of any kind. The chart is plain <rect> elements whose widths were
+  computed in Python. Open the file anywhere, offline, and it renders.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Static security analysis report</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         margin: 0; padding: 2rem 1.5rem 4rem; color: #1b1f24; background: #f6f7f9;
+         line-height: 1.55; }
+  main { max-width: 62rem; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.15rem; margin: 2.25rem 0 .75rem; padding-bottom: .35rem;
+       border-bottom: 2px solid #dde1e6; }
+  .subtitle { color: #57606a; margin: 0 0 1.5rem; font-size: .92rem; }
+  .card { background: #fff; border: 1px solid #dde1e6; border-radius: 8px;
+          padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #e8ebee; }
+  th { color: #57606a; font-weight: 600; }
+  .tag { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .03em;
+         padding: .15rem .5rem; border-radius: 999px; color: #fff; text-transform: uppercase; }
+  .pill { display: inline-block; font-size: .75rem; padding: .15rem .5rem; border-radius: 999px;
+          background: #eef1f4; color: #3d454e; margin-right: .35rem; }
+  .finding { background: #fff; border: 1px solid #dde1e6; border-left-width: 5px;
+             border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+  .finding h3 { font-size: 1rem; margin: 0 0 .15rem; font-family: ui-monospace, Consolas, monospace; }
+  .finding-id { color: #6b747d; font-family: inherit; font-weight: 600; }
+  .finding .msg { margin: .5rem 0 .75rem; }
+  .meta-line { font-size: .8rem; color: #57606a; margin: 0 0 .5rem; }
+  pre.snippet { background: #fbfcfd; border: 1px solid #e3e7eb; border-radius: 6px;
+                padding: .6rem 0; margin: .75rem 0; overflow-x: auto;
+                font-family: ui-monospace, Consolas, "Courier New", monospace;
+                font-size: .82rem; line-height: 1.5; }
+  .code-line { padding: 0 .75rem; white-space: pre; }
+  .gutter { color: #97a0aa; user-select: none; padding-right: .9rem; }
+  .advice { font-size: .87rem; margin: .35rem 0; }
+  .advice b { color: #3d454e; }
+  ul.plain { margin: .5rem 0; padding-left: 1.2rem; }
+  ul.plain li { margin-bottom: .45rem; font-size: .89rem; }
+  .empty { color: #57606a; font-style: italic; }
+  .banner { background: #fff8e1; border: 1px solid #e0c65a; border-left: 5px solid #b98700;
+            border-radius: 8px; padding: .9rem 1.25rem; margin-bottom: 1.5rem; font-size: .92rem; }
+  .banner ul.plain li { margin-bottom: .2rem; }
+  .banner.urgent { background: #fff1f3; border-color: #e2879a; border-left-color: #b3123a; }
+  .exploit-note { font-size: .84rem; margin: .35rem 0 .1rem; color: #3d454e; }
+  .index-wrap { overflow-x: auto; }
+  .index-table td { vertical-align: top; }
+  .index-table .location { font-family: ui-monospace, Consolas, monospace; font-weight: 600; }
+  .fact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+               gap: .35rem 1rem; margin: .65rem 0; font-size: .84rem; }
+  .fact-grid div { overflow-wrap: anywhere; }
+  .fact-grid b { color: #3d454e; }
+  .coverage-note { margin: .8rem 0 0; font-size: .84rem; color: #57606a; }
+  @media (max-width: 640px) { .fact-grid { grid-template-columns: 1fr; } }
+  footer { max-width: 62rem; margin: 2.5rem auto 0; font-size: .8rem; color: #6b747d; }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>Static security analysis report</h1>
+  <p class="subtitle">
+    Target: <b>C:\Users\Moham\Downloads\syndique</b> &middot; generated 2026-07-30 20:20:01 &middot; scan took 87.28s
+    &middot; <b>all selected scans completed</b>
+  </p>
+
+  <!-- A scan that was skipped or that broke covers NO ground. Saying this
+       first stops the reader treating "0 findings" as "nothing is wrong". -->
+  
+
+  <!-- The one thing a reader should act on first: not "what is severe in
+       general", but "what is being attacked in the real world right now". -->
+  
+
+  <!-- ============ what was scanned (routing, made visible) ============ -->
+  <h2>Coverage and scan status</h2>
+  <div class="card">
+    <p class="meta-line">
+      The collector walked the target once and grouped
+      304 file(s). Each scan below received only the
+      files it declared it wanted — that routing is what the table records.
+    </p>
+    <table>
+      <tr><th>Scan</th><th>Tool</th><th>Rules/configuration</th><th>Scope</th><th>Files routed</th><th>Files confirmed scanned</th><th>Status</th><th>Findings</th></tr>
+      
+      <tr>
+        <td>PHP code scan (Semgrep)</td>
+        <td>semgrep</td>
+        <td>
+          
+            p/php
+          
+        </td>
+        <td>routed files</td>
+        <td>175</td>
+        <td>175</td>
+        <td>ran</td>
+        <td>0</td>
+      </tr>
+      
+      <tr>
+        <td>JavaScript/TypeScript code scan (Semgrep)</td>
+        <td>semgrep</td>
+        <td>
+          
+            p/javascript, p/eslint-plugin-security, p/nodejsscan
+          
+        </td>
+        <td>routed files</td>
+        <td>79</td>
+        <td>79</td>
+        <td>ran</td>
+        <td>1</td>
+      </tr>
+      
+      <tr>
+        <td>Python code scan (Semgrep)</td>
+        <td>semgrep</td>
+        <td>
+          
+            p/python
+          
+        </td>
+        <td>routed files</td>
+        <td>0</td>
+        <td>0</td>
+        <td>no matching files</td>
+        <td>0</td>
+      </tr>
+      
+      <tr>
+        <td>Dependency scan - known CVEs (Trivy)</td>
+        <td>trivy</td>
+        <td>
+          
+            Trivy vulnerability advisory database
+          
+        </td>
+        <td>routed files</td>
+        <td>2</td>
+        <td>2</td>
+        <td>ran</td>
+        <td>11</td>
+      </tr>
+      
+      <tr>
+        <td>Secrets scan (Gitleaks)</td>
+        <td>gitleaks</td>
+        <td>
+          
+            Gitleaks default rules
+          
+        </td>
+        <td>whole target directory (shared excludes applied)</td>
+        <td>304</td>
+        <td>not reported by tool</td>
+        <td>ran</td>
+        <td>0</td>
+      </tr>
+      
+    </table>
+    
+    <p class="coverage-note"><b>Collected file groups:</b>
+      
+      <span class="pill">(no extension): 21</span>
+      
+      <span class="pill">.css: 3</span>
+      
+      <span class="pill">.example: 1</span>
+      
+      <span class="pill">.html: 1</span>
+      
+      <span class="pill">.ico: 1</span>
+      
+      <span class="pill">.js: 2</span>
+      
+      <span class="pill">.json: 9</span>
+      
+      <span class="pill">.lock: 1</span>
+      
+      <span class="pill">.md: 3</span>
+      
+      <span class="pill">.php: 175</span>
+      
+      <span class="pill">.png: 1</span>
+      
+      <span class="pill">.svg: 4</span>
+      
+      <span class="pill">.ts: 22</span>
+      
+      <span class="pill">.tsx: 55</span>
+      
+      <span class="pill">.txt: 2</span>
+      
+      <span class="pill">.xml: 1</span>
+      
+      <span class="pill">composer.lock: 1</span>
+      
+      <span class="pill">package-lock.json: 1</span>
+      
+    </p>
+    
+    
+    <p class="coverage-note">
+      <b>Not routed to a selected code/dependency scanner:</b>
+      
+      <span class="pill">(no extension): 21</span>
+      
+      <span class="pill">.json: 9</span>
+      
+      <span class="pill">.svg: 4</span>
+      
+      <span class="pill">.css: 3</span>
+      
+      <span class="pill">.md: 3</span>
+      
+      <span class="pill">.txt: 2</span>
+      
+      <span class="pill">.example: 1</span>
+      
+      <span class="pill">.html: 1</span>
+      
+      <span class="pill">.ico: 1</span>
+      
+      <span class="pill">.lock: 1</span>
+      
+      <span class="pill">.png: 1</span>
+      
+      <span class="pill">.xml: 1</span>
+      
+      <br>These files may be documentation, configuration, assets, or unsupported
+      source types. This is a visible coverage boundary, not evidence that they
+      are vulnerable. A selected secrets scan still checks all collected files.
+    </p>
+    
+  </div>
+
+  <!-- ============ summary + inline SVG chart ============ -->
+  <h2>Summary</h2>
+  <div class="card">
+    <p class="meta-line"><b>12</b> finding(s) after removing duplicates across tools.</p>
+    <svg width="100%" viewBox="0 0 620 130" role="img"
+         aria-label="Findings by severity" style="max-width:620px">
+      
+      <text x="0" y="13" font-size="12" font-family="sans-serif" fill="#3d454e">CRITICAL</text>
+      
+      <text x="86" y="13" font-size="12"
+            font-family="sans-serif" fill="#3d454e">0</text>
+      
+      <text x="0" y="39" font-size="12" font-family="sans-serif" fill="#3d454e">HIGH</text>
+      
+      <rect x="80" y="26" width="47" height="18"
+            fill="#d9480f" rx="3"></rect>
+      
+      <text x="133" y="39" font-size="12"
+            font-family="sans-serif" fill="#3d454e">1</text>
+      
+      <text x="0" y="65" font-size="12" font-family="sans-serif" fill="#3d454e">MEDIUM</text>
+      
+      <rect x="80" y="52" width="420" height="18"
+            fill="#b98700" rx="3"></rect>
+      
+      <text x="506" y="65" font-size="12"
+            font-family="sans-serif" fill="#3d454e">9</text>
+      
+      <text x="0" y="91" font-size="12" font-family="sans-serif" fill="#3d454e">LOW</text>
+      
+      <rect x="80" y="78" width="93" height="18"
+            fill="#1c7ed6" rx="3"></rect>
+      
+      <text x="179" y="91" font-size="12"
+            font-family="sans-serif" fill="#3d454e">2</text>
+      
+      <text x="0" y="117" font-size="12" font-family="sans-serif" fill="#3d454e">INFO</text>
+      
+      <text x="86" y="117" font-size="12"
+            font-family="sans-serif" fill="#3d454e">0</text>
+      
+    </svg>
+    <p class="meta-line" style="margin-top:.75rem">
+      By tool:
+      <span class="pill">semgrep: 1</span><span class="pill">trivy: 11</span>
+      
+      <br>By confidence:
+      <span class="pill">high: 11</span><span class="pill">medium: 1</span><span class="pill">low: 0</span>
+      <br>By real-world exploitation:
+      <span class="pill">not applicable: 6</span><span class="pill">unlikely: 6</span>
+    </p>
+    <p class="meta-line" style="margin-top:.5rem">
+      Exploitation data source: CISA KEV + FIRST EPSS, fetched just now
+      
+      &mdash; CISA KEV: available;
+      FIRST EPSS: available
+      
+      
+    </p>
+  </div>
+
+  <!-- ============ compact, location-first triage index ============ -->
+  <h2>Findings index</h2>
+  
+  <div class="card index-wrap">
+    <table class="index-table">
+      <tr>
+        <th>#</th><th>Severity</th><th>File and line</th><th>Tool / scan</th>
+        <th>Rule or advisory</th><th>Tool explanation</th>
+      </tr>
+      
+      <tr>
+        <td>1</td>
+        <td>HIGH</td>
+        <td class="location">frontend/package-lock.json:17</td>
+        <td>trivy / dependencies</td>
+        <td>react-router - GHSA-qwww-vcr4-c8h2</td>
+        <td>react-router 7.18.0: React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response (fixed in 8.3.0)</td>
+      </tr>
+      
+      <tr>
+        <td>2</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:24</td>
+        <td>trivy / dependencies</td>
+        <td>dompdf/dompdf - CVE-2026-56722</td>
+        <td>dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)</td>
+      </tr>
+      
+      <tr>
+        <td>3</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:24</td>
+        <td>trivy / dependencies</td>
+        <td>dompdf/dompdf - CVE-2026-59941</td>
+        <td>dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ac ... (fixed in 3.1.6)</td>
+      </tr>
+      
+      <tr>
+        <td>4</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:24</td>
+        <td>trivy / dependencies</td>
+        <td>dompdf/dompdf - CVE-2026-59942</td>
+        <td>dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)</td>
+      </tr>
+      
+      <tr>
+        <td>5</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:24</td>
+        <td>trivy / dependencies</td>
+        <td>dompdf/dompdf - CVE-2026-59943</td>
+        <td>dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)</td>
+      </tr>
+      
+      <tr>
+        <td>6</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:876</td>
+        <td>trivy / dependencies</td>
+        <td>guzzlehttp/guzzle - GHSA-94pj-82f3-465w</td>
+        <td>guzzlehttp/guzzle 7.13.1: Guzzle: Proxy-Authorization headers can be sent to origin servers (fixed in 7.14.2)</td>
+      </tr>
+      
+      <tr>
+        <td>7</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:876</td>
+        <td>trivy / dependencies</td>
+        <td>guzzlehttp/guzzle - GHSA-f283-ghqc-fg79</td>
+        <td>guzzlehttp/guzzle 7.13.1: Guzzle: Unbounded response cookies risk denial of service (fixed in 7.15.1)</td>
+      </tr>
+      
+      <tr>
+        <td>8</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:876</td>
+        <td>trivy / dependencies</td>
+        <td>guzzlehttp/guzzle - GHSA-h95v-h523-3mw8</td>
+        <td>guzzlehttp/guzzle 7.13.1: Guzzle: URI fragments disclosed in redirect Referer headers (fixed in 7.15.1)</td>
+      </tr>
+      
+      <tr>
+        <td>9</td>
+        <td>MEDIUM</td>
+        <td class="location">backend/composer.lock:876</td>
+        <td>trivy / dependencies</td>
+        <td>guzzlehttp/guzzle - GHSA-wm3w-8rrp-j577</td>
+        <td>guzzlehttp/guzzle 7.13.1: Guzzle: Host-only cookie scope is not preserved (fixed in 7.15.1)</td>
+      </tr>
+      
+      <tr>
+        <td>10</td>
+        <td>MEDIUM</td>
+        <td class="location">frontend/src/pages/LandingPage.tsx:270</td>
+        <td>semgrep / js</td>
+        <td>ajinabraham.njsscan.crypto.crypto_node.node_insecure_random_generator</td>
+        <td>crypto.pseudoRandomBytes()/Math.random() is a cryptographically weak random number generator.</td>
+      </tr>
+      
+      <tr>
+        <td>11</td>
+        <td>LOW</td>
+        <td class="location">backend/composer.lock:24</td>
+        <td>trivy / dependencies</td>
+        <td>dompdf/dompdf - CVE-2026-55555</td>
+        <td>dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)</td>
+      </tr>
+      
+      <tr>
+        <td>12</td>
+        <td>LOW</td>
+        <td class="location">backend/composer.lock:24</td>
+        <td>trivy / dependencies</td>
+        <td>dompdf/dompdf - CVE-2026-55554</td>
+        <td>dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)</td>
+      </tr>
+      
+    </table>
+  </div>
+  
+
+  <!-- ============ full finding evidence ============ -->
+  <h2>Findings</h2>
+  
+
+  
+  <div class="finding" style="border-left-color: #d9480f">
+    <h3><span class="finding-id">Finding 1 —</span> frontend/package-lock.json:17</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #d9480f">HIGH</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">unmapped</span>
+      <span class="pill">Not mapped by this report</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> frontend/package-lock.json</div>
+      <div><b>Line:</b> 17</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> react-router - GHSA-qwww-vcr4-c8h2</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> react-router 7.18.0: React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response (fixed in 8.3.0)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">    15</span><span class="code"><span style="color: #BBB">        </span><span style="color: #008000; font-weight: bold">&quot;react-dom&quot;</span>:<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;^19.2.7&quot;</span>,</span></div><div class="code-line" style=""><span class="gutter">    16</span><span class="code"><span style="color: #BBB">        </span><span style="color: #008000; font-weight: bold">&quot;react-i18next&quot;</span>:<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;^17.0.8&quot;</span>,</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;   17</span><span class="code"><span style="color: #BBB">        </span><span style="color: #008000; font-weight: bold">&quot;react-router-dom&quot;</span>:<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;^7.18.0&quot;</span>,</span></div><div class="code-line" style=""><span class="gutter">    18</span><span class="code"><span style="color: #BBB">        </span><span style="color: #008000; font-weight: bold">&quot;recharts&quot;</span>:<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;^3.9.1&quot;</span>,</span></div><div class="code-line" style=""><span class="gutter">    19</span><span class="code"><span style="color: #BBB">        </span><span style="color: #008000; font-weight: bold">&quot;zustand&quot;</span>:<span style="color: #BBB"> </span><span style="color: #BA2121">&quot;^5.0.14&quot;</span></span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> not applicable
+      — GHSA-QWWW-VCR4-C8H2 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.
+    </p>
+    <p class="advice"><b>Remediation:</b> Review the tool&#39;s explanation, advisory, and CWE identifier before choosing a fix.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 2 —</span> backend/composer.lock:24</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">CWE-20</span>
+      <span class="pill">A03:2021 - Injection</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 24</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> dompdf/dompdf - CVE-2026-56722</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">    22</span><span class="code">            },</span></div><div class="code-line" style=""><span class="gutter">    23</span><span class="code">            &quot;require&quot;: {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;   24</span><span class="code">                &quot;dompdf/dompdf&quot;: &quot;^3.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    25</span><span class="code">                &quot;illuminate/support&quot;: &quot;^9|^10|^11|^12|^13.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    26</span><span class="code">                &quot;php&quot;: &quot;^8.1&quot;</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> unlikely (EPSS 0.6%, 43.3th percentile)
+      — EPSS estimates a 0.6% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.
+    </p>
+    <p class="advice"><b>Remediation:</b> Validate input against an expected type, range and format server-side.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> Unvalidated input reaches logic that assumed a shape it never checked.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 3 —</span> backend/composer.lock:24</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">CWE-400</span>
+      <span class="pill">A06:2021 - Vulnerable and Outdated Components</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 24</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> dompdf/dompdf - CVE-2026-59941</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ac ... (fixed in 3.1.6)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">    22</span><span class="code">            },</span></div><div class="code-line" style=""><span class="gutter">    23</span><span class="code">            &quot;require&quot;: {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;   24</span><span class="code">                &quot;dompdf/dompdf&quot;: &quot;^3.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    25</span><span class="code">                &quot;illuminate/support&quot;: &quot;^9|^10|^11|^12|^13.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    26</span><span class="code">                &quot;php&quot;: &quot;^8.1&quot;</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> unlikely (EPSS 0.5%, 40.5th percentile)
+      — EPSS estimates a 0.5% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.
+    </p>
+    <p class="advice"><b>Remediation:</b> Upgrade the affected package and bound the work any single request can cause.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> A small crafted input triggers disproportionate CPU or memory use, starving other users.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 4 —</span> backend/composer.lock:24</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">CWE-400</span>
+      <span class="pill">A06:2021 - Vulnerable and Outdated Components</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 24</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> dompdf/dompdf - CVE-2026-59942</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">    22</span><span class="code">            },</span></div><div class="code-line" style=""><span class="gutter">    23</span><span class="code">            &quot;require&quot;: {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;   24</span><span class="code">                &quot;dompdf/dompdf&quot;: &quot;^3.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    25</span><span class="code">                &quot;illuminate/support&quot;: &quot;^9|^10|^11|^12|^13.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    26</span><span class="code">                &quot;php&quot;: &quot;^8.1&quot;</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> unlikely (EPSS 0.4%, 32.3th percentile)
+      — EPSS estimates a 0.4% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.
+    </p>
+    <p class="advice"><b>Remediation:</b> Upgrade the affected package and bound the work any single request can cause.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> A small crafted input triggers disproportionate CPU or memory use, starving other users.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 5 —</span> backend/composer.lock:24</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">CWE-209</span>
+      <span class="pill">A05:2021 - Security Misconfiguration</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 24</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> dompdf/dompdf - CVE-2026-59943</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">    22</span><span class="code">            },</span></div><div class="code-line" style=""><span class="gutter">    23</span><span class="code">            &quot;require&quot;: {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;   24</span><span class="code">                &quot;dompdf/dompdf&quot;: &quot;^3.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    25</span><span class="code">                &quot;illuminate/support&quot;: &quot;^9|^10|^11|^12|^13.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    26</span><span class="code">                &quot;php&quot;: &quot;^8.1&quot;</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> unlikely (EPSS 0.3%, 23.2th percentile)
+      — EPSS estimates a 0.3% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.
+    </p>
+    <p class="advice"><b>Remediation:</b> Log details server-side; return a generic message and an error id to the caller.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> A stack trace in an error page reveals file paths, library versions and query fragments.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 6 —</span> backend/composer.lock:876</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">unmapped</span>
+      <span class="pill">Not mapped by this report</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 876</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> guzzlehttp/guzzle - GHSA-94pj-82f3-465w</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> guzzlehttp/guzzle 7.13.1: Guzzle: Proxy-Authorization headers can be sent to origin servers (fixed in 7.14.2)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">   874</span><span class="code">        },</span></div><div class="code-line" style=""><span class="gutter">   875</span><span class="code">        {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;  876</span><span class="code">            &quot;name&quot;: &quot;guzzlehttp/guzzle&quot;,</span></div><div class="code-line" style=""><span class="gutter">   877</span><span class="code">            &quot;version&quot;: &quot;7.13.1&quot;,</span></div><div class="code-line" style=""><span class="gutter">   878</span><span class="code">            &quot;source&quot;: {</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> not applicable
+      — GHSA-94PJ-82F3-465W is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.
+    </p>
+    <p class="advice"><b>Remediation:</b> Review the tool&#39;s explanation, advisory, and CWE identifier before choosing a fix.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 7 —</span> backend/composer.lock:876</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">unmapped</span>
+      <span class="pill">Not mapped by this report</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 876</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> guzzlehttp/guzzle - GHSA-f283-ghqc-fg79</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> guzzlehttp/guzzle 7.13.1: Guzzle: Unbounded response cookies risk denial of service (fixed in 7.15.1)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">   874</span><span class="code">        },</span></div><div class="code-line" style=""><span class="gutter">   875</span><span class="code">        {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;  876</span><span class="code">            &quot;name&quot;: &quot;guzzlehttp/guzzle&quot;,</span></div><div class="code-line" style=""><span class="gutter">   877</span><span class="code">            &quot;version&quot;: &quot;7.13.1&quot;,</span></div><div class="code-line" style=""><span class="gutter">   878</span><span class="code">            &quot;source&quot;: {</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> not applicable
+      — GHSA-F283-GHQC-FG79 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.
+    </p>
+    <p class="advice"><b>Remediation:</b> Review the tool&#39;s explanation, advisory, and CWE identifier before choosing a fix.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 8 —</span> backend/composer.lock:876</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">unmapped</span>
+      <span class="pill">Not mapped by this report</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 876</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> guzzlehttp/guzzle - GHSA-h95v-h523-3mw8</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> guzzlehttp/guzzle 7.13.1: Guzzle: URI fragments disclosed in redirect Referer headers (fixed in 7.15.1)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">   874</span><span class="code">        },</span></div><div class="code-line" style=""><span class="gutter">   875</span><span class="code">        {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;  876</span><span class="code">            &quot;name&quot;: &quot;guzzlehttp/guzzle&quot;,</span></div><div class="code-line" style=""><span class="gutter">   877</span><span class="code">            &quot;version&quot;: &quot;7.13.1&quot;,</span></div><div class="code-line" style=""><span class="gutter">   878</span><span class="code">            &quot;source&quot;: {</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> not applicable
+      — GHSA-H95V-H523-3MW8 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.
+    </p>
+    <p class="advice"><b>Remediation:</b> Review the tool&#39;s explanation, advisory, and CWE identifier before choosing a fix.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 9 —</span> backend/composer.lock:876</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">unmapped</span>
+      <span class="pill">Not mapped by this report</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 876</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> guzzlehttp/guzzle - GHSA-wm3w-8rrp-j577</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> guzzlehttp/guzzle 7.13.1: Guzzle: Host-only cookie scope is not preserved (fixed in 7.15.1)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">   874</span><span class="code">        },</span></div><div class="code-line" style=""><span class="gutter">   875</span><span class="code">        {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;  876</span><span class="code">            &quot;name&quot;: &quot;guzzlehttp/guzzle&quot;,</span></div><div class="code-line" style=""><span class="gutter">   877</span><span class="code">            &quot;version&quot;: &quot;7.13.1&quot;,</span></div><div class="code-line" style=""><span class="gutter">   878</span><span class="code">            &quot;source&quot;: {</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> not applicable
+      — GHSA-WM3W-8RRP-J577 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.
+    </p>
+    <p class="advice"><b>Remediation:</b> Review the tool&#39;s explanation, advisory, and CWE identifier before choosing a fix.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #b98700">
+    <h3><span class="finding-id">Finding 10 —</span> frontend/src/pages/LandingPage.tsx:270</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #b98700">MEDIUM</span>
+      
+      <span class="pill">confidence: medium</span>
+      <span class="pill">found by: semgrep</span>
+      <span class="pill">CWE-327</span>
+      <span class="pill">A02:2021 - Cryptographic Failures</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> frontend/src/pages/LandingPage.tsx</div>
+      <div><b>Line:</b> 270</div>
+      <div><b>Detected by:</b> semgrep</div>
+      <div><b>Scan:</b> js — ran</div>
+      <div><b>Rule / advisory:</b> ajinabraham.njsscan.crypto.crypto_node.node_insecure_random_generator</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="msg"><b>Tool explanation:</b> crypto.pseudoRandomBytes()/Math.random() is a cryptographically weak random number generator.</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">   268</span><span class="code"><span style="color: #BBB">                </span>&lt;<span style="color: #008000; font-weight: bold">div</span><span style="color: #BBB"> </span><span style="color: #687822">key</span><span style="color: #666">=</span>{item}<span style="color: #BBB"> </span><span style="color: #687822">style</span><span style="color: #666">=</span>{{<span style="color: #BBB"> </span>display<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;flex&#39;</span>,<span style="color: #BBB"> </span>alignItems<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;center&#39;</span>,<span style="color: #BBB"> </span>gap<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">8</span>,<span style="color: #BBB"> </span>padding<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;0.4rem 0.6rem&#39;</span>,<span style="color: #BBB"> </span>borderRadius<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">7</span>,<span style="color: #BBB"> </span>background<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">item</span><span style="color: #BBB"> </span><span style="color: #666">===</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;Finances&#39;</span><span style="color: #BBB"> </span><span style="color: #666">?</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;rgba(99,102,241,0.25)&#39;</span><span style="color: #BBB"> </span><span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;transparent&#39;</span><span style="color: #BBB"> </span>}}&gt;</span></div><div class="code-line" style=""><span class="gutter">   269</span><span class="code"><span style="color: #BBB">                  </span>&lt;<span style="color: #008000; font-weight: bold">div</span><span style="color: #BBB"> </span><span style="color: #687822">style</span><span style="color: #666">=</span>{{<span style="color: #BBB"> </span>width<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">8</span>,<span style="color: #BBB"> </span>height<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">8</span>,<span style="color: #BBB"> </span>borderRadius<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">2</span>,<span style="color: #BBB"> </span>background<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">item</span><span style="color: #BBB"> </span><span style="color: #666">===</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;Finances&#39;</span><span style="color: #BBB"> </span><span style="color: #666">?</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;#818cf8&#39;</span><span style="color: #BBB"> </span><span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;rgba(255,255,255,0.15)&#39;</span><span style="color: #BBB"> </span>}}<span style="color: #BBB"> </span>/&gt;</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;  270</span><span class="code"><span style="color: #BBB">                  </span>&lt;<span style="color: #008000; font-weight: bold">div</span><span style="color: #BBB"> </span><span style="color: #687822">style</span><span style="color: #666">=</span>{{<span style="color: #BBB"> </span>height<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">7</span>,<span style="color: #BBB"> </span>width<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #BA2121">`</span><span style="color: #A45A77; font-weight: bold">${</span><span style="color: #666">30</span><span style="color: #BBB"> </span><span style="color: #666">+</span><span style="color: #BBB"> </span><span style="color: #008000">Math</span>.random()<span style="color: #BBB"> </span><span style="color: #666">*</span><span style="color: #BBB"> </span><span style="color: #666">40</span><span style="color: #A45A77; font-weight: bold">}</span><span style="color: #BA2121">%`</span>,<span style="color: #BBB"> </span>background<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">item</span><span style="color: #BBB"> </span><span style="color: #666">===</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;Finances&#39;</span><span style="color: #BBB"> </span><span style="color: #666">?</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;rgba(129,140,248,0.7)&#39;</span><span style="color: #BBB"> </span><span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #BA2121">&#39;rgba(255,255,255,0.12)&#39;</span>,<span style="color: #BBB"> </span>borderRadius<span style="color: #666">:</span><span style="color: #BBB"> </span><span style="color: #B00040">99</span><span style="color: #BBB"> </span>}}<span style="color: #BBB"> </span>/&gt;</span></div><div class="code-line" style=""><span class="gutter">   271</span><span class="code"><span style="color: #BBB">                </span>&lt;/<span style="color: #008000; font-weight: bold">div</span>&gt;</span></div><div class="code-line" style=""><span class="gutter">   272</span><span class="code"><span style="color: #BBB">              </span>))}</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> not applicable
+      — Exploitation data covers CVEs only. This finding has no CVE id, so no prediction applies - that is not a statement that it is low risk.
+    </p>
+    <p class="advice"><b>Remediation:</b> Use modern, vetted algorithms (AES-GCM, SHA-256, bcrypt/argon2 for passwords).</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> Passwords hashed with MD5 are recovered offline with commodity hardware and rainbow tables.</p>
+    <p class="advice"><b>Rule:</b> ajinabraham.njsscan.crypto.crypto_node.node_insecure_random_generator</p>
+  </div>
+  
+  <div class="finding" style="border-left-color: #1c7ed6">
+    <h3><span class="finding-id">Finding 11 —</span> backend/composer.lock:24</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #1c7ed6">LOW</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">CWE-203</span>
+      <span class="pill">A07:2021 - Identification and Authentication Failures</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 24</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> dompdf/dompdf - CVE-2026-55555</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">    22</span><span class="code">            },</span></div><div class="code-line" style=""><span class="gutter">    23</span><span class="code">            &quot;require&quot;: {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;   24</span><span class="code">                &quot;dompdf/dompdf&quot;: &quot;^3.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    25</span><span class="code">                &quot;illuminate/support&quot;: &quot;^9|^10|^11|^12|^13.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    26</span><span class="code">                &quot;php&quot;: &quot;^8.1&quot;</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> unlikely (EPSS 0.5%, 40.3th percentile)
+      — EPSS estimates a 0.5% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.
+    </p>
+    <p class="advice"><b>Remediation:</b> Make failure responses uniform in content and timing so they reveal nothing.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> A login that answers faster for unknown users lets an attacker enumerate valid accounts.</p>
+    
+  </div>
+  
+  <div class="finding" style="border-left-color: #1c7ed6">
+    <h3><span class="finding-id">Finding 12 —</span> backend/composer.lock:24</h3>
+    <p class="meta-line">
+      <span class="tag" style="background: #1c7ed6">LOW</span>
+      
+      <span class="pill">confidence: high</span>
+      <span class="pill">found by: trivy</span>
+      <span class="pill">CWE-20</span>
+      <span class="pill">A03:2021 - Injection</span>
+    </p>
+    <div class="fact-grid">
+      <div><b>File path:</b> backend/composer.lock</div>
+      <div><b>Line:</b> 24</div>
+      <div><b>Detected by:</b> trivy</div>
+      <div><b>Scan:</b> dependencies — ran</div>
+      <div><b>Rule / advisory:</b> dompdf/dompdf - CVE-2026-55554</div>
+      <div><b>Triage state:</b> needs manual review</div>
+    </div>
+    
+    <p class="meta-line">The lockfile line is shown only as a reference. This
+    finding is identified by package and advisory, so lockfile line changes do
+    not create a false new vulnerability.</p>
+    
+    <p class="msg"><b>Tool explanation:</b> dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)</p>
+
+    
+    <pre class="snippet"><div class="code-line" style=""><span class="gutter">    22</span><span class="code">            },</span></div><div class="code-line" style=""><span class="gutter">    23</span><span class="code">            &quot;require&quot;: {</span></div><div class="code-line" style="background:#fff4f4;"><span class="gutter">&gt;   24</span><span class="code">                &quot;dompdf/dompdf&quot;: &quot;^3.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    25</span><span class="code">                &quot;illuminate/support&quot;: &quot;^9|^10|^11|^12|^13.0&quot;,</span></div><div class="code-line" style=""><span class="gutter">    26</span><span class="code">                &quot;php&quot;: &quot;^8.1&quot;</span></div></pre>
+    
+
+    <p class="exploit-note">
+      <b>Real-world exploitation:</b> unlikely (EPSS 0.3%, 20.0th percentile)
+      — EPSS estimates a 0.3% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.
+    </p>
+    <p class="advice"><b>Remediation:</b> Validate input against an expected type, range and format server-side.</p>
+    <p class="advice"><b>Illustrative scenario (documentation only, not executed):</b> Unvalidated input reaches logic that assumed a shape it never checked.</p>
+    
+  </div>
+  
+
+  <!-- ============ honesty ============ -->
+  <h2>Limitations</h2>
+  <div class="card">
+    <ul class="plain">
+      <li>This is STATIC analysis only. Nothing was executed, no requests were sent, and no running system was tested. A finding describes code as written, not proven exploitability.</li><li>Detection is tool- and pattern-based, so FALSE POSITIVES are expected. Every finding needs manual triage before it is treated as a real vulnerability.</li><li>Absence of findings is not proof of safety (false negatives). Coverage is limited to the file types routed to the tools that were installed at scan time.</li><li>Dependency findings come from advisory databases and may not apply to your configuration or code path - check whether the vulnerable function is actually used.</li><li>Severity is reported as the tool assigned it. It reflects the general class of issue, not the business impact in this specific application.</li><li>Attack scenarios in this report are ILLUSTRATIVE textbook descriptions included for explanation only. They were not attempted against this code.</li><li>This report quotes excerpts of the scanned source code. Secret values found by the secrets scan are masked, but the report should still be treated as SENSITIVE and shared with the same care as the code itself.</li><li>EPSS is a PREDICTION about the world, not a measurement of this application. It estimates the chance a vulnerability is exploited somewhere in the next 30 days. This report labels scores of 10% or more as &#39;likely exploited&#39; for prioritisation. A low score is a reason to deprioritise, never a guarantee of safety.</li><li>The CISA KEV catalogue lists vulnerabilities CONFIRMED to be exploited in the wild, so being listed is strong evidence. It is not exhaustive, however - absence from KEV does not mean nobody is exploiting the issue.</li><li>Exploitation data exists only for findings with a CVE id. Code and secret findings are marked &#39;not applicable&#39;, which says the data does not cover them - it is NOT a judgement that they are low risk.</li>
+    </ul>
+  </div>
+
+  <h2>Standards referenced</h2>
+  <div class="card">
+    <ul class="plain">
+      <li>OWASP Top 10:2021 - category mapping for each finding</li><li>CWE Top 25 - the weakness identifiers used throughout</li><li>MITRE CAPEC - attack-pattern context behind the illustrative scenarios</li><li>OWASP ASVS - verification requirements to triage findings against</li><li>ISO/IEC 27034 - application security management framework</li><li>NIST SSDF (SP 800-218) - secure software development practices</li><li>NIST NVD - the CVE data source behind dependency findings</li><li>FIRST EPSS - exploit prediction scores used to prioritise CVE findings</li><li>CISA KEV - catalogue of vulnerabilities known to be exploited in the wild</li>
+    </ul>
+  </div>
+
+</main>
+<footer>
+  Generated by a static analysis CLI that orchestrates Semgrep, Trivy and Gitleaks.
+  Findings are collected and consolidated, not independently verified. Triage manually.
+</footer>
+</body>
+</html>

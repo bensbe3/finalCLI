@@ -1,0 +1,46 @@
+---
+sourceLocationPrefix: C:\Users\Moham\Downloads\syndique
+baselineLinesOfCode: 15682
+unicodeNewlines: true
+columnKind: utf16
+primaryLanguage: javascript
+inProgress:
+  primaryLanguage: javascript
+  installedExtractors:
+    actions:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/actions
+    cpp:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/cpp
+    csharp:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/csharp
+    csv:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/csv
+    go:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/go
+    html:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/html
+    java:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/java
+    javascript:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/javascript
+    properties:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/properties
+    python:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/python
+    ruby:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/ruby
+    rust:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/rust
+    swift:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/swift
+    xml:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/xml
+    yaml:
+     - C:/Users/Moham/Tools/codeql-cli/codeql/yaml
+creationMetadata:
+  sha: 57b613a1671022edca66c3f548483da69aef7345
+  cliVersion: 2.26.3
+  creationTime: 2026-08-14T13:45:04.984489Z
+overlayBaseDatabase: false
+overlayDatabase: false
+finalised: false

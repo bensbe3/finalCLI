@@ -1,0 +1,780 @@
+{
+  "meta": {
+    "target": "C:\\Users\\Moham\\Downloads\\syndique",
+    "generated_at": "2026-07-30 20:20:01",
+    "duration_seconds": 87.28,
+    "files_collected": 304,
+    "files_by_type": {
+      "(no extension)": 21,
+      ".css": 3,
+      ".example": 1,
+      ".html": 1,
+      ".ico": 1,
+      ".js": 2,
+      ".json": 9,
+      ".lock": 1,
+      ".md": 3,
+      ".php": 175,
+      ".png": 1,
+      ".svg": 4,
+      ".ts": 22,
+      ".tsx": 55,
+      ".txt": 2,
+      ".xml": 1,
+      "composer.lock": 1,
+      "package-lock.json": 1
+    },
+    "scans": [
+      {
+        "label": "PHP code scan (Semgrep)",
+        "scan_type": "php",
+        "tool": "semgrep",
+        "rulesets": [
+          "p/php"
+        ],
+        "scope": "routed files",
+        "files_selected": 175,
+        "files_scanned": 175,
+        "status": "ran",
+        "findings": 0
+      },
+      {
+        "label": "JavaScript/TypeScript code scan (Semgrep)",
+        "scan_type": "js",
+        "tool": "semgrep",
+        "rulesets": [
+          "p/javascript",
+          "p/eslint-plugin-security",
+          "p/nodejsscan"
+        ],
+        "scope": "routed files",
+        "files_selected": 79,
+        "files_scanned": 79,
+        "status": "ran",
+        "findings": 1
+      },
+      {
+        "label": "Python code scan (Semgrep)",
+        "scan_type": "python",
+        "tool": "semgrep",
+        "rulesets": [
+          "p/python"
+        ],
+        "scope": "routed files",
+        "files_selected": 0,
+        "files_scanned": 0,
+        "status": "no matching files",
+        "findings": 0
+      },
+      {
+        "label": "Dependency scan - known CVEs (Trivy)",
+        "scan_type": "dependencies",
+        "tool": "trivy",
+        "rulesets": [],
+        "scope": "routed files",
+        "files_selected": 2,
+        "files_scanned": 2,
+        "status": "ran",
+        "findings": 11
+      },
+      {
+        "label": "Secrets scan (Gitleaks)",
+        "scan_type": "secrets",
+        "tool": "gitleaks",
+        "rulesets": [],
+        "scope": "whole target directory (shared excludes applied)",
+        "files_selected": 304,
+        "files_scanned": null,
+        "status": "ran",
+        "findings": 0
+      }
+    ],
+    "scanner_declarations": [
+      {
+        "scan_type": "php",
+        "label": "PHP code scan (Semgrep)",
+        "file_types": [
+          ".php",
+          ".php5",
+          ".phtml"
+        ]
+      },
+      {
+        "scan_type": "js",
+        "label": "JavaScript/TypeScript code scan (Semgrep)",
+        "file_types": [
+          ".cjs",
+          ".js",
+          ".jsx",
+          ".mjs",
+          ".ts",
+          ".tsx"
+        ]
+      },
+      {
+        "scan_type": "python",
+        "label": "Python code scan (Semgrep)",
+        "file_types": [
+          ".py"
+        ]
+      },
+      {
+        "scan_type": "dependencies",
+        "label": "Dependency scan - known CVEs (Trivy)",
+        "file_types": [
+          "cargo.lock",
+          "composer.lock",
+          "conan.lock",
+          "gemfile.lock",
+          "go.mod",
+          "manifest.toml",
+          "mix.lock",
+          "package-lock.json",
+          "package.resolved",
+          "packages.config",
+          "packages.lock.json",
+          "pipfile.lock",
+          "pnpm-lock.yaml",
+          "podfile.lock",
+          "poetry.lock",
+          "pom.xml",
+          "pubspec.lock",
+          "requirements.txt",
+          "yarn.lock"
+        ]
+      },
+      {
+        "scan_type": "secrets",
+        "label": "Secrets scan (Gitleaks)",
+        "file_types": [
+          "*"
+        ]
+      }
+    ],
+    "scan_status_by_type": {
+      "php": "ran",
+      "js": "ran",
+      "python": "no matching files",
+      "dependencies": "ran",
+      "secrets": "ran"
+    },
+    "exploitation_source": "CISA KEV + FIRST EPSS, fetched just now",
+    "exploitation_available": true,
+    "kev_available": true,
+    "epss_available": true
+  },
+  "summary": {
+    "total": 12,
+    "by_severity": {
+      "CRITICAL": 0,
+      "HIGH": 1,
+      "MEDIUM": 9,
+      "LOW": 2,
+      "INFO": 0
+    },
+    "by_tool": {
+      "semgrep": 1,
+      "trivy": 11
+    },
+    "by_confidence": {
+      "high": 11,
+      "medium": 1,
+      "low": 0
+    },
+    "actively_exploited": 0,
+    "by_exploitation": {
+      "not applicable": 6,
+      "unlikely": 6
+    }
+  },
+  "incomplete_scans": [],
+  "coverage": {
+    "selected_scans_completed": true,
+    "status": "all selected scans completed",
+    "unrouted_file_types": [
+      {
+        "file_type": "(no extension)",
+        "files": 21
+      },
+      {
+        "file_type": ".json",
+        "files": 9
+      },
+      {
+        "file_type": ".svg",
+        "files": 4
+      },
+      {
+        "file_type": ".css",
+        "files": 3
+      },
+      {
+        "file_type": ".md",
+        "files": 3
+      },
+      {
+        "file_type": ".txt",
+        "files": 2
+      },
+      {
+        "file_type": ".example",
+        "files": 1
+      },
+      {
+        "file_type": ".html",
+        "files": 1
+      },
+      {
+        "file_type": ".ico",
+        "files": 1
+      },
+      {
+        "file_type": ".lock",
+        "files": 1
+      },
+      {
+        "file_type": ".png",
+        "files": 1
+      },
+      {
+        "file_type": ".xml",
+        "files": 1
+      }
+    ],
+    "no_matching_scans": [
+      {
+        "label": "Python code scan (Semgrep)",
+        "scan_type": "python",
+        "tool": "semgrep",
+        "rulesets": [
+          "p/python"
+        ],
+        "scope": "routed files",
+        "files_selected": 0,
+        "files_scanned": 0,
+        "status": "no matching files",
+        "findings": 0
+      }
+    ]
+  },
+  "findings_index": [
+    {
+      "number": 1,
+      "severity": "HIGH",
+      "location": "frontend/package-lock.json:17",
+      "file": "frontend/package-lock.json",
+      "line": 17,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "react-router - GHSA-qwww-vcr4-c8h2",
+      "explanation": "react-router 7.18.0: React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response (fixed in 8.3.0)",
+      "exploit_status": "not applicable"
+    },
+    {
+      "number": 2,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:24",
+      "file": "backend/composer.lock",
+      "line": 24,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "dompdf/dompdf - CVE-2026-56722",
+      "explanation": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)",
+      "exploit_status": "unlikely"
+    },
+    {
+      "number": 3,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:24",
+      "file": "backend/composer.lock",
+      "line": 24,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "dompdf/dompdf - CVE-2026-59941",
+      "explanation": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ac ... (fixed in 3.1.6)",
+      "exploit_status": "unlikely"
+    },
+    {
+      "number": 4,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:24",
+      "file": "backend/composer.lock",
+      "line": 24,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "dompdf/dompdf - CVE-2026-59942",
+      "explanation": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)",
+      "exploit_status": "unlikely"
+    },
+    {
+      "number": 5,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:24",
+      "file": "backend/composer.lock",
+      "line": 24,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "dompdf/dompdf - CVE-2026-59943",
+      "explanation": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)",
+      "exploit_status": "unlikely"
+    },
+    {
+      "number": 6,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:876",
+      "file": "backend/composer.lock",
+      "line": 876,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "guzzlehttp/guzzle - GHSA-94pj-82f3-465w",
+      "explanation": "guzzlehttp/guzzle 7.13.1: Guzzle: Proxy-Authorization headers can be sent to origin servers (fixed in 7.14.2)",
+      "exploit_status": "not applicable"
+    },
+    {
+      "number": 7,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:876",
+      "file": "backend/composer.lock",
+      "line": 876,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "guzzlehttp/guzzle - GHSA-f283-ghqc-fg79",
+      "explanation": "guzzlehttp/guzzle 7.13.1: Guzzle: Unbounded response cookies risk denial of service (fixed in 7.15.1)",
+      "exploit_status": "not applicable"
+    },
+    {
+      "number": 8,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:876",
+      "file": "backend/composer.lock",
+      "line": 876,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "guzzlehttp/guzzle - GHSA-h95v-h523-3mw8",
+      "explanation": "guzzlehttp/guzzle 7.13.1: Guzzle: URI fragments disclosed in redirect Referer headers (fixed in 7.15.1)",
+      "exploit_status": "not applicable"
+    },
+    {
+      "number": 9,
+      "severity": "MEDIUM",
+      "location": "backend/composer.lock:876",
+      "file": "backend/composer.lock",
+      "line": 876,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "guzzlehttp/guzzle - GHSA-wm3w-8rrp-j577",
+      "explanation": "guzzlehttp/guzzle 7.13.1: Guzzle: Host-only cookie scope is not preserved (fixed in 7.15.1)",
+      "exploit_status": "not applicable"
+    },
+    {
+      "number": 10,
+      "severity": "MEDIUM",
+      "location": "frontend/src/pages/LandingPage.tsx:270",
+      "file": "frontend/src/pages/LandingPage.tsx",
+      "line": 270,
+      "tool": "semgrep",
+      "scan_type": "js",
+      "scan_status": "ran",
+      "identity": "ajinabraham.njsscan.crypto.crypto_node.node_insecure_random_generator",
+      "explanation": "crypto.pseudoRandomBytes()/Math.random() is a cryptographically weak random number generator.",
+      "exploit_status": "not applicable"
+    },
+    {
+      "number": 11,
+      "severity": "LOW",
+      "location": "backend/composer.lock:24",
+      "file": "backend/composer.lock",
+      "line": 24,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "dompdf/dompdf - CVE-2026-55555",
+      "explanation": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)",
+      "exploit_status": "unlikely"
+    },
+    {
+      "number": 12,
+      "severity": "LOW",
+      "location": "backend/composer.lock:24",
+      "file": "backend/composer.lock",
+      "line": 24,
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "scan_status": "ran",
+      "identity": "dompdf/dompdf - CVE-2026-55554",
+      "explanation": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)",
+      "exploit_status": "unlikely"
+    }
+  ],
+  "findings": [
+    {
+      "file": "frontend/package-lock.json",
+      "line": 17,
+      "rule_id": "GHSA-qwww-vcr4-c8h2",
+      "message": "react-router 7.18.0: React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response (fixed in 8.3.0)",
+      "severity": "HIGH",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "",
+      "snippet": "    15 |         \"react-dom\": \"^19.2.7\",\n    16 |         \"react-i18next\": \"^17.0.8\",\n>   17 |         \"react-router-dom\": \"^7.18.0\",\n    18 |         \"recharts\": \"^3.9.1\",\n    19 |         \"zustand\": \"^5.0.14\"",
+      "package": "react-router",
+      "advisory_id": "GHSA-qwww-vcr4-c8h2",
+      "owasp": "Not mapped by this report",
+      "remediation": "Review the tool's explanation, advisory, and CWE identifier before choosing a fix.",
+      "scenario": "No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.",
+      "exploit_status": "not applicable",
+      "epss": null,
+      "epss_percentile": null,
+      "kev": false,
+      "exploit_note": "GHSA-QWWW-VCR4-C8H2 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.",
+      "severity_rank": 4,
+      "fingerprint": [
+        "dep",
+        "react-router",
+        "GHSA-qwww-vcr4-c8h2"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 24,
+      "rule_id": "CVE-2026-56722",
+      "message": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "CWE-20",
+      "snippet": "    22 |             },\n    23 |             \"require\": {\n>   24 |                 \"dompdf/dompdf\": \"^3.0\",\n    25 |                 \"illuminate/support\": \"^9|^10|^11|^12|^13.0\",\n    26 |                 \"php\": \"^8.1\"",
+      "package": "dompdf/dompdf",
+      "advisory_id": "CVE-2026-56722",
+      "owasp": "A03:2021 - Injection",
+      "remediation": "Validate input against an expected type, range and format server-side.",
+      "scenario": "Unvalidated input reaches logic that assumed a shape it never checked.",
+      "exploit_status": "unlikely",
+      "epss": 0.00558,
+      "epss_percentile": 0.43311,
+      "kev": false,
+      "exploit_note": "EPSS estimates a 0.6% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "dompdf/dompdf",
+        "CVE-2026-56722"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 24,
+      "rule_id": "CVE-2026-59941",
+      "message": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ac ... (fixed in 3.1.6)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "CWE-400",
+      "snippet": "    22 |             },\n    23 |             \"require\": {\n>   24 |                 \"dompdf/dompdf\": \"^3.0\",\n    25 |                 \"illuminate/support\": \"^9|^10|^11|^12|^13.0\",\n    26 |                 \"php\": \"^8.1\"",
+      "package": "dompdf/dompdf",
+      "advisory_id": "CVE-2026-59941",
+      "owasp": "A06:2021 - Vulnerable and Outdated Components",
+      "remediation": "Upgrade the affected package and bound the work any single request can cause.",
+      "scenario": "A small crafted input triggers disproportionate CPU or memory use, starving other users.",
+      "exploit_status": "unlikely",
+      "epss": 0.00507,
+      "epss_percentile": 0.40481,
+      "kev": false,
+      "exploit_note": "EPSS estimates a 0.5% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "dompdf/dompdf",
+        "CVE-2026-59941"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 24,
+      "rule_id": "CVE-2026-59942",
+      "message": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "CWE-400",
+      "snippet": "    22 |             },\n    23 |             \"require\": {\n>   24 |                 \"dompdf/dompdf\": \"^3.0\",\n    25 |                 \"illuminate/support\": \"^9|^10|^11|^12|^13.0\",\n    26 |                 \"php\": \"^8.1\"",
+      "package": "dompdf/dompdf",
+      "advisory_id": "CVE-2026-59942",
+      "owasp": "A06:2021 - Vulnerable and Outdated Components",
+      "remediation": "Upgrade the affected package and bound the work any single request can cause.",
+      "scenario": "A small crafted input triggers disproportionate CPU or memory use, starving other users.",
+      "exploit_status": "unlikely",
+      "epss": 0.00395,
+      "epss_percentile": 0.32305,
+      "kev": false,
+      "exploit_note": "EPSS estimates a 0.4% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "dompdf/dompdf",
+        "CVE-2026-59942"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 24,
+      "rule_id": "CVE-2026-59943",
+      "message": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "CWE-209",
+      "snippet": "    22 |             },\n    23 |             \"require\": {\n>   24 |                 \"dompdf/dompdf\": \"^3.0\",\n    25 |                 \"illuminate/support\": \"^9|^10|^11|^12|^13.0\",\n    26 |                 \"php\": \"^8.1\"",
+      "package": "dompdf/dompdf",
+      "advisory_id": "CVE-2026-59943",
+      "owasp": "A05:2021 - Security Misconfiguration",
+      "remediation": "Log details server-side; return a generic message and an error id to the caller.",
+      "scenario": "A stack trace in an error page reveals file paths, library versions and query fragments.",
+      "exploit_status": "unlikely",
+      "epss": 0.00308,
+      "epss_percentile": 0.23204,
+      "kev": false,
+      "exploit_note": "EPSS estimates a 0.3% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "dompdf/dompdf",
+        "CVE-2026-59943"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 876,
+      "rule_id": "GHSA-94pj-82f3-465w",
+      "message": "guzzlehttp/guzzle 7.13.1: Guzzle: Proxy-Authorization headers can be sent to origin servers (fixed in 7.14.2)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "",
+      "snippet": "   874 |         },\n   875 |         {\n>  876 |             \"name\": \"guzzlehttp/guzzle\",\n   877 |             \"version\": \"7.13.1\",\n   878 |             \"source\": {",
+      "package": "guzzlehttp/guzzle",
+      "advisory_id": "GHSA-94pj-82f3-465w",
+      "owasp": "Not mapped by this report",
+      "remediation": "Review the tool's explanation, advisory, and CWE identifier before choosing a fix.",
+      "scenario": "No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.",
+      "exploit_status": "not applicable",
+      "epss": null,
+      "epss_percentile": null,
+      "kev": false,
+      "exploit_note": "GHSA-94PJ-82F3-465W is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "guzzlehttp/guzzle",
+        "GHSA-94pj-82f3-465w"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 876,
+      "rule_id": "GHSA-f283-ghqc-fg79",
+      "message": "guzzlehttp/guzzle 7.13.1: Guzzle: Unbounded response cookies risk denial of service (fixed in 7.15.1)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "",
+      "snippet": "   874 |         },\n   875 |         {\n>  876 |             \"name\": \"guzzlehttp/guzzle\",\n   877 |             \"version\": \"7.13.1\",\n   878 |             \"source\": {",
+      "package": "guzzlehttp/guzzle",
+      "advisory_id": "GHSA-f283-ghqc-fg79",
+      "owasp": "Not mapped by this report",
+      "remediation": "Review the tool's explanation, advisory, and CWE identifier before choosing a fix.",
+      "scenario": "No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.",
+      "exploit_status": "not applicable",
+      "epss": null,
+      "epss_percentile": null,
+      "kev": false,
+      "exploit_note": "GHSA-F283-GHQC-FG79 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "guzzlehttp/guzzle",
+        "GHSA-f283-ghqc-fg79"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 876,
+      "rule_id": "GHSA-h95v-h523-3mw8",
+      "message": "guzzlehttp/guzzle 7.13.1: Guzzle: URI fragments disclosed in redirect Referer headers (fixed in 7.15.1)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "",
+      "snippet": "   874 |         },\n   875 |         {\n>  876 |             \"name\": \"guzzlehttp/guzzle\",\n   877 |             \"version\": \"7.13.1\",\n   878 |             \"source\": {",
+      "package": "guzzlehttp/guzzle",
+      "advisory_id": "GHSA-h95v-h523-3mw8",
+      "owasp": "Not mapped by this report",
+      "remediation": "Review the tool's explanation, advisory, and CWE identifier before choosing a fix.",
+      "scenario": "No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.",
+      "exploit_status": "not applicable",
+      "epss": null,
+      "epss_percentile": null,
+      "kev": false,
+      "exploit_note": "GHSA-H95V-H523-3MW8 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "guzzlehttp/guzzle",
+        "GHSA-h95v-h523-3mw8"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 876,
+      "rule_id": "GHSA-wm3w-8rrp-j577",
+      "message": "guzzlehttp/guzzle 7.13.1: Guzzle: Host-only cookie scope is not preserved (fixed in 7.15.1)",
+      "severity": "MEDIUM",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "",
+      "snippet": "   874 |         },\n   875 |         {\n>  876 |             \"name\": \"guzzlehttp/guzzle\",\n   877 |             \"version\": \"7.13.1\",\n   878 |             \"source\": {",
+      "package": "guzzlehttp/guzzle",
+      "advisory_id": "GHSA-wm3w-8rrp-j577",
+      "owasp": "Not mapped by this report",
+      "remediation": "Review the tool's explanation, advisory, and CWE identifier before choosing a fix.",
+      "scenario": "No general scenario is stored for this CWE; use the tool or advisory evidence for this finding.",
+      "exploit_status": "not applicable",
+      "epss": null,
+      "epss_percentile": null,
+      "kev": false,
+      "exploit_note": "GHSA-WM3W-8RRP-J577 is not a CVE id. CISA KEV and FIRST EPSS index CVEs only, so no exploitation score applies; this is not a statement that the advisory is low risk.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "dep",
+        "guzzlehttp/guzzle",
+        "GHSA-wm3w-8rrp-j577"
+      ]
+    },
+    {
+      "file": "frontend/src/pages/LandingPage.tsx",
+      "line": 270,
+      "rule_id": "ajinabraham.njsscan.crypto.crypto_node.node_insecure_random_generator",
+      "message": "crypto.pseudoRandomBytes()/Math.random() is a cryptographically weak random number generator.",
+      "severity": "MEDIUM",
+      "tool": "semgrep",
+      "scan_type": "js",
+      "confidence": "medium",
+      "cwe": "CWE-327",
+      "snippet": "   268 |                 <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0.4rem 0.6rem', borderRadius: 7, background: item === 'Finances' ? 'rgba(99,102,241,0.25)' : 'transparent' }}>\n   269 |                   <div style={{ width: 8, height: 8, borderRadius: 2, background: item === 'Finances' ? '#818cf8' : 'rgba(255,255,255,0.15)' }} />\n>  270 |                   <div style={{ height: 7, width: `${30 + Math.random() * 40}%`, background: item === 'Finances' ? 'rgba(129,140,248,0.7)' : 'rgba(255,255,255,0.12)', borderRadius: 99 }} />\n   271 |                 </div>\n   272 |               ))}",
+      "package": "",
+      "advisory_id": "",
+      "owasp": "A02:2021 - Cryptographic Failures",
+      "remediation": "Use modern, vetted algorithms (AES-GCM, SHA-256, bcrypt/argon2 for passwords).",
+      "scenario": "Passwords hashed with MD5 are recovered offline with commodity hardware and rainbow tables.",
+      "exploit_status": "not applicable",
+      "epss": null,
+      "epss_percentile": null,
+      "kev": false,
+      "exploit_note": "Exploitation data covers CVEs only. This finding has no CVE id, so no prediction applies - that is not a statement that it is low risk.",
+      "severity_rank": 3,
+      "fingerprint": [
+        "code",
+        "frontend/src/pages/LandingPage.tsx",
+        270,
+        "ajinabraham.njsscan.crypto.crypto_node.node_insecure_random_generator"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 24,
+      "rule_id": "CVE-2026-55555",
+      "message": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. Versions 3.15 and prior ar ... (fixed in 3.1.6)",
+      "severity": "LOW",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "CWE-203",
+      "snippet": "    22 |             },\n    23 |             \"require\": {\n>   24 |                 \"dompdf/dompdf\": \"^3.0\",\n    25 |                 \"illuminate/support\": \"^9|^10|^11|^12|^13.0\",\n    26 |                 \"php\": \"^8.1\"",
+      "package": "dompdf/dompdf",
+      "advisory_id": "CVE-2026-55555",
+      "owasp": "A07:2021 - Identification and Authentication Failures",
+      "remediation": "Make failure responses uniform in content and timing so they reveal nothing.",
+      "scenario": "A login that answers faster for unknown users lets an attacker enumerate valid accounts.",
+      "exploit_status": "unlikely",
+      "epss": 0.00504,
+      "epss_percentile": 0.40275,
+      "kev": false,
+      "exploit_note": "EPSS estimates a 0.5% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.",
+      "severity_rank": 2,
+      "fingerprint": [
+        "dep",
+        "dompdf/dompdf",
+        "CVE-2026-55555"
+      ]
+    },
+    {
+      "file": "backend/composer.lock",
+      "line": 24,
+      "rule_id": "CVE-2026-55554",
+      "message": "dompdf/dompdf v3.1.5: Dompdf is an HTML to PDF converter for PHP. In versions 3.15 and prior ... (fixed in 3.1.6)",
+      "severity": "LOW",
+      "tool": "trivy",
+      "scan_type": "dependencies",
+      "confidence": "high",
+      "cwe": "CWE-20",
+      "snippet": "    22 |             },\n    23 |             \"require\": {\n>   24 |                 \"dompdf/dompdf\": \"^3.0\",\n    25 |                 \"illuminate/support\": \"^9|^10|^11|^12|^13.0\",\n    26 |                 \"php\": \"^8.1\"",
+      "package": "dompdf/dompdf",
+      "advisory_id": "CVE-2026-55554",
+      "owasp": "A03:2021 - Injection",
+      "remediation": "Validate input against an expected type, range and format server-side.",
+      "scenario": "Unvalidated input reaches logic that assumed a shape it never checked.",
+      "exploit_status": "unlikely",
+      "epss": 0.00278,
+      "epss_percentile": 0.20043,
+      "kev": false,
+      "exploit_note": "EPSS estimates a 0.3% chance of exploitation in the next 30 days. Still worth fixing, but rarely urgent.",
+      "severity_rank": 2,
+      "fingerprint": [
+        "dep",
+        "dompdf/dompdf",
+        "CVE-2026-55554"
+      ]
+    }
+  ],
+  "limitations": [
+    "This is STATIC analysis only. Nothing was executed, no requests were sent, and no running system was tested. A finding describes code as written, not proven exploitability.",
+    "Detection is tool- and pattern-based, so FALSE POSITIVES are expected. Every finding needs manual triage before it is treated as a real vulnerability.",
+    "Absence of findings is not proof of safety (false negatives). Coverage is limited to the file types routed to the tools that were installed at scan time.",
+    "Dependency findings come from advisory databases and may not apply to your configuration or code path - check whether the vulnerable function is actually used.",
+    "Severity is reported as the tool assigned it. It reflects the general class of issue, not the business impact in this specific application.",
+    "Attack scenarios in this report are ILLUSTRATIVE textbook descriptions included for explanation only. They were not attempted against this code.",
+    "This report quotes excerpts of the scanned source code. Secret values found by the secrets scan are masked, but the report should still be treated as SENSITIVE and shared with the same care as the code itself.",
+    "EPSS is a PREDICTION about the world, not a measurement of this application. It estimates the chance a vulnerability is exploited somewhere in the next 30 days. This report labels scores of 10% or more as 'likely exploited' for prioritisation. A low score is a reason to deprioritise, never a guarantee of safety.",
+    "The CISA KEV catalogue lists vulnerabilities CONFIRMED to be exploited in the wild, so being listed is strong evidence. It is not exhaustive, however - absence from KEV does not mean nobody is exploiting the issue.",
+    "Exploitation data exists only for findings with a CVE id. Code and secret findings are marked 'not applicable', which says the data does not cover them - it is NOT a judgement that they are low risk."
+  ],
+  "standards_referenced": [
+    "OWASP Top 10:2021 - category mapping for each finding",
+    "CWE Top 25 - the weakness identifiers used throughout",
+    "MITRE CAPEC - attack-pattern context behind the illustrative scenarios",
+    "OWASP ASVS - verification requirements to triage findings against",
+    "ISO/IEC 27034 - application security management framework",
+    "NIST SSDF (SP 800-218) - secure software development practices",
+    "NIST NVD - the CVE data source behind dependency findings",
+    "FIRST EPSS - exploit prediction scores used to prioritise CVE findings",
+    "CISA KEV - catalogue of vulnerabilities known to be exploited in the wild"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+    "_readme": [
+        "INTENTIONALLY VULNERABLE test fixture - never install or deploy.",
+        "phpmailer 5.2.16 is pinned on purpose: CVE-2016-10033 is listed in",
+        "CISA's Known Exploited Vulnerabilities catalogue, so this file lets",
+        "the scanner demonstrate a finding that is attacked in the real world,",
+        "not merely severe in theory."
+    ],
+    "content-hash": "0000000000000000000000000000000f",
+    "packages": [
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v5.2.16",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "5f9f8f6bf40dc3ce9e2e2b3ab0e3b7f5a06f5c62"
+            },
+            "type": "library",
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP"
+        },
+        {
+            "name": "monolog/monolog",
+            "version": "1.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Seldaek/monolog.git",
+                "reference": "75ea0e1e9a5b8ac1a1ce4b2d38a0e7fd0c7b2a2e"
+            },
+            "type": "library",
+            "description": "Sends your logs to files, sockets, inboxes, databases and various web services"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

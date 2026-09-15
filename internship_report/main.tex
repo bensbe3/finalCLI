@@ -1,0 +1,858 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ============================================================================
+% IDENTITÉ — À COMPLÉTER avant impression.
+% Tout champ encore marqué [À RENSEIGNER] doit être remplacé par
+% l'étudiant : ces informations (nom, organisme, encadrants, dates)
+% ne peuvent pas être devinées ni inventées.
+% ============================================================================
+\newcommand{\AuthorName}{[\`A RENSEIGNER]}
+\newcommand{\StudentID}{[\`A RENSEIGNER]}
+\newcommand{\AcademicYear}{[\`A RENSEIGNER]}
+\newcommand{\SupervisorName}{[\`A RENSEIGNER]}
+\newcommand{\HostOrg}{[\`A RENSEIGNER]}
+\newcommand{\HostSupervisor}{[\`A RENSEIGNER]}
+\newcommand{\InternshipPeriod}{[\`A RENSEIGNER]}
+\newcommand{\SchoolName}{ENSIASD}
+\newcommand{\ThemeTitleA}{Orchestration d'outils d'analyse de s\'ecurit\'e statique}
+\newcommand{\ThemeTitleB}{(Semgrep, Trivy, Gitleaks)}
+
+\input{preamble}
+
+\begin{document}
+
+% ============================================================================
+% PAGE DE GARDE
+% ============================================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+{\fontsize{11pt}{14pt}\selectfont\color{muted} \'ECOLE NATIONALE DES SCIENCES APPLIQU\'EES\\
+FILI\`ERE : SYST\`EMES D'INFORMATION ET S\'ECURIT\'E}\\[0.3em]
+{\color{accentblue}\rule{0.35\linewidth}{0.8pt}}\\[2.2cm]
+
+{\fontsize{13pt}{16pt}\selectfont\color{bluedeep}\bfseries RAPPORT DE STAGE D'INITIATION}\\[2.6cm]
+
+{\color{accentblue}\rule{0.55\linewidth}{1.6pt}}\\[0.9cm]
+{\fontsize{20pt}{25pt}\selectfont\bfseries\color{ink} \ThemeTitleA \\[0.35em] \ThemeTitleB}\\[0.9cm]
+{\color{accentblue}\rule{0.55\linewidth}{1.6pt}}\\[2.6cm]
+
+\begin{minipage}{0.42\linewidth}
+\raggedright
+{\small\color{muted} \'Etabli par}\\[0.15em]
+{\bfseries \AuthorName}\\
+{\small CNE~: \StudentID}
+\end{minipage}
+\hfill
+\begin{minipage}{0.42\linewidth}
+\raggedleft
+{\small\color{muted} Encadr\'e par}\\[0.15em]
+{\bfseries \SupervisorName} \textit{(encadrant p\'edagogique)}\\
+{\bfseries \HostSupervisor} \textit{(ma\^itre de stage)}
+\end{minipage}
+
+\vfill
+
+{\small\color{muted}
+Organisme d'accueil~: \HostOrg\\
+P\'eriode du stage~: \InternshipPeriod\\[0.6em]
+Ann\'ee universitaire~\AcademicYear}
+
+\end{center}
+\end{titlepage}
+
+% ============================================================================
+% PAGES LIMINAIRES (non numérotées en arabe)
+% ============================================================================
+
+\frontchapter{D\'EDICACES}
+\vspace{2cm}
+\begin{center}
+\textit{[\`A RENSEIGNER par l'\'etudiant -- texte personnel, non g\'en\'erable.]}
+\end{center}
+
+\frontchapter{REMERCIEMENTS}
+Je tiens \`a exprimer ma gratitude \`a toutes les personnes qui m'ont accompagn\'e durant ce stage d'initiation.
+
+\textit{[\`A RENSEIGNER -- remerciements nominatifs \`a l'encadrant p\'edagogique, au ma\^itre de stage et \`a l'\'equipe d'accueil. Ce paragraphe est personnel et ne peut pas \^etre r\'edig\'e \`a la place de l'\'etudiant.]}
+
+\frontchapter{R\'ESUM\'E}
+V\'erifier la s\'ecurit\'e d'une application signifie, en pratique, lire son code \`a la recherche d'erreurs dangereuses (une requ\^ete SQL construite avec une entr\'ee utilisateur, par exemple), v\'erifier que les biblioth\`eques t\'el\'echarg\'ees ne portent pas de faille connue, et s'assurer qu'aucun mot de passe n'a \'et\'e oubli\'e dans le code source. Trois t\^aches diff\'erentes, trois outils diff\'erents, trois r\'esultats \`a lire s\'epar\'ement -- sans qu'aucun ne dise lequel corriger en premier.
+
+Ce stage d'initiation a port\'e sur la conception d'un outil en ligne de commande qui r\'esout ce probl\`eme d'organisation, sans chercher \`a red\'etecter ce que des outils \'eprouv\'es savent d\'ej\`a faire. Son c\oe ur est l'analyse statique de code (SAST), assur\'ee par \textbf{Semgrep}~: c'est l'outil central du dispositif, celui qui lit directement le code source en PHP, en JavaScript et en Python pour y reconna\^itre des motifs dangereux -- un peu \`a la mani\`ere d'un correcteur orthographique, mais entra\^in\'e \`a rep\'erer des failles de s\'ecurit\'e plut\^ot que des fautes de frappe. Deux outils compl\'ementaires, plus cibl\'es, viennent l'entourer~: \textbf{Trivy} v\'erifie les d\'ependances d\'eclar\'ees dans les fichiers de verrouillage du projet, et \textbf{Gitleaks} recherche les secrets accidentellement laiss\'es dans le code.
+
+L'apport du stage tient dans la mani\`ere dont ces trois outils sont assembl\'es~: un m\'ecanisme de \emph{routage} n'envoie \`a chaque outil que les fichiers qui le concernent~; les r\'esultats sont ensuite fusionn\'es sans doublon, puis enrichis \`a l'aide de deux bases de connaissances -- une correspondance CWE~$\to$~OWASP qui explique chaque vuln\'erabilit\'e en langage clair, et une interrogation des catalogues publics CISA~KEV et FIRST~EPSS qui distingue une vuln\'erabilit\'e r\'eellement attaqu\'ee dans le monde r\'eel d'une vuln\'erabilit\'e qui reste th\'eorique. Le rapport final, produit en HTML autonome et en JSON, dit explicitement ce qui n'a pas pu \^etre v\'erifi\'e, plut\^ot que de laisser un lecteur croire qu'une absence de r\'esultat signifie une absence de risque.
+
+Le travail a \'et\'e valid\'e par une suite de 101~tests automatis\'es, dont des tests de bout en bout ex\'ecutant r\'eellement les trois outils sur une application volontairement vuln\'erable con\c{c}ue \`a cet effet.
+
+\textit{Mots-cl\'es~: analyse statique, SAST, Semgrep, SCA, Trivy, Gitleaks, CWE, OWASP, CVE, EPSS, CISA KEV.}
+
+\tableofcontents
+\clearpage
+\thispagestyle{front}
+
+\frontchapter{LISTE DES ABR\'EVIATIONS}
+\begin{tabularx}{\linewidth}{@{}p{3.1cm}X@{}}
+SAST & Static Application Security Testing -- analyse statique de code \\
+SCA & Software Composition Analysis -- analyse des d\'ependances \\
+CLI & Command-Line Interface -- interface en ligne de commande \\
+CWE & Common Weakness Enumeration -- catalogue de types de faiblesses \\
+CVE & Common Vulnerabilities and Exposures -- identifiant de vuln\'erabilit\'e \\
+GHSA & GitHub Security Advisory -- avis de s\'ecurit\'e GitHub \\
+NVD & National Vulnerability Database (NIST) \\
+OWASP & Open Worldwide Application Security Project \\
+ASVS & Application Security Verification Standard (OWASP) \\
+CAPEC & Common Attack Pattern Enumeration and Classification (MITRE) \\
+SSDF & Secure Software Development Framework (NIST SP~800-218) \\
+EPSS & Exploit Prediction Scoring System (FIRST) \\
+KEV & Known Exploited Vulnerabilities (catalogue CISA) \\
+CI/CD & Int\'egration et d\'eploiement continus \\
+JSON & JavaScript Object Notation \\
+HTML & HyperText Markup Language \\
+API & Application Programming Interface \\
+\end{tabularx}
+
+\frontchapter{LISTE DES FIGURES}
+\listoffigures
+
+\frontchapter{LISTE DES TABLEAUX}
+\listoftables
+
+% ============================================================================
+% NUMÉROTATION ARABE À PARTIR DE L'INTRODUCTION GÉNÉRALE
+% ============================================================================
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\frontchapter{INTRODUCTION G\'EN\'ERALE}
+
+Imaginons un d\'eveloppeur qui veut simplement s'assurer que son projet ne contient pas de faille \'evidente avant de le mettre en ligne. Son projet m\'elange du PHP c\^ot\'e serveur, du JavaScript c\^ot\'e client, et des dizaines de biblioth\`eques t\'el\'echarg\'ees automatiquement par un gestionnaire de paquets. Pour le v\'erifier s\'erieusement, il doit lancer au moins trois outils diff\'erents~: un pour lire le code \`a la recherche de motifs dangereux, un pour comparer ses d\'ependances \`a une base de vuln\'erabilit\'es connues, un pour rep\'erer les mots de passe oubli\'es dans le code. Chacun s'installe, se configure et s'ex\'ecute s\'epar\'ement. Chacun produit son propre fichier de r\'esultats, dans son propre format, avec son propre vocabulaire de s\'ev\'erit\'e. Le d\'eveloppeur se retrouve avec trois fichiers JSON diff\'erents, sans vue d'ensemble et sans savoir lequel des r\'esultats m\'erite d'\^etre corrig\'e en premier -- et abandonne souvent l'exercice avant d'en tirer un vrai b\'en\'efice.
+
+C'est cette difficult\'e concr\`ete, et non le manque d'outils de d\'etection performants, qui a guid\'e ce stage d'initiation. L'objectif n'\'etait pas de cr\'eer un nouveau moteur de d\'etection de vuln\'erabilit\'es -- cela d\'epasserait largement le cadre d'un stage d'initiation, et referait un travail d\'ej\`a accompli, et bien accompli, par des outils matures et maintenus par des \'equipes enti\`eres. L'objectif \'etait de construire la couche qui manque entre ces outils et leur utilisateur~: une orchestration qui d\'ecide quel fichier envoyer \`a quel outil, qui fusionne intelligemment leurs r\'esultats, et qui restitue le tout dans un rapport unique, lisible, et honn\^ete sur ce qu'il sait vraiment.
+
+Le livrable de ce stage est un outil en ligne de commande \'ecrit en Python, construit autour d'un pilier central~: \textbf{Semgrep}, l'analyseur de code qui assure l'essentiel de la d\'etection statique (SAST) sur les trois langages du p\'erim\`etre -- PHP, JavaScript et Python. Deux outils compl\'ementaires l'entourent~: Trivy pour les d\'ependances, Gitleaks pour les secrets. L'outil ne red\'etecte rien lui-m\^eme~: il fait ex\'ecuter ces trois analyseurs sur exactement les fichiers qui les concernent, consolide leurs r\'esultats, les enrichit \`a partir de deux bases de connaissances -- l'une sur la nature des faiblesses, l'autre sur leur exploitation r\'eelle observ\'ee dans le monde -- puis g\'en\`ere un rapport qui indique clairement ce qui a \'et\'e v\'erifi\'e, ce qui ne l'a pas \'et\'e, et pourquoi une absence de r\'esultat ne signifie jamais une absence de risque.
+
+Ce m\'emoire est organis\'e en quatre chapitres. Le chapitre~I pr\'esente le contexte du stage, la probl\'ematique observ\'ee et les objectifs retenus. Le chapitre~II explique, en langage simple, ce qu'est l'analyse statique (SAST) et comment elle fonctionne concr\`etement, avant de justifier le choix de Semgrep comme outil central et de Trivy et Gitleaks comme compl\'ements. Le chapitre~III d\'etaille la conception de la solution~: l'architecture en pipeline, le m\'ecanisme de routage, le mod\`ele de donn\'ees et la gestion des exclusions. Le chapitre~IV pr\'esente la r\'ealisation, l'interface obtenue, les tests effectu\'es et les r\'esultats mesur\'es, sans dissimuler les limites constat\'ees.
+
+
+% ============================================================================
+% CHAPITRE I
+% ============================================================================
+\chapter{CONTEXTE ET OBJECTIFS DU STAGE}
+
+Ce premier chapitre situe le stage~: l'organisme d'accueil, la difficult\'e concr\`ete \`a l'origine du sujet, les objectifs retenus et la m\'ethode de travail suivie.
+
+\section{Pr\'esentation de l'organisme d'accueil}
+
+\subsection{Historique et activit\'es}
+\textit{[\`A RENSEIGNER -- pr\'esentation de \HostOrg : secteur d'activit\'e, taille, historique. Section \`a r\'edaction personnelle, non g\'en\'erable sans information r\'eelle sur l'organisme d'accueil.]}
+
+\subsection{Service d'accueil et environnement technique}
+\textit{[\`A RENSEIGNER -- service ou \'equipe d'accueil, position du stagiaire, environnement technique de l'organisme (langages, outils internes) s'ils sont pertinents pour situer le travail r\'ealis\'e.]}
+
+\section{Probl\'ematique}
+
+\subsection{La s\'ecurit\'e dans le cycle de d\'eveloppement}
+Int\'egrer des v\'erifications de s\'ecurit\'e t\^ot dans le cycle de d\'eveloppement -- plut\^ot qu'au moment de la mise en production -- r\'eduit le co\^ut de correction d'une vuln\'erabilit\'e. Cette id\'ee, souvent r\'esum\'ee par l'expression \emph{shift left}, suppose que les outils d'analyse soient effectivement utilis\'es par les d\'eveloppeurs au quotidien, et non r\'eserv\'es \`a un audit ponctuel. Trois familles d'outils couvrent des aspects compl\'ementaires~: l'analyse du code source lui-m\^eme, l'analyse des d\'ependances tierces, et la d\'etection de secrets accidentellement committ\'es.
+
+\subsection{Difficult\'es constat\'ees}
+Utiliser plusieurs de ces outils sur un m\^eme projet fait appara\^itre trois difficult\'es concr\`etes~:
+\begin{itemize}
+\item \textbf{Dispersion des outils et des formats de sortie.} Chaque outil s'ex\'ecute et se configure s\'epar\'ement, et produit son propre format de r\'esultat -- souvent du JSON, mais avec une structure et un vocabulaire propres \`a chaque outil.
+\item \textbf{Rapports peu exploitables.} Un rapport brut m\'elange des r\'esultats fiables (une correspondance exacte avec une base de vuln\'erabilit\'es connues) et des r\'esultats fond\'es sur des motifs, sujets \`a des faux positifs, sans distinction visible entre les deux.
+\item \textbf{Absence de priorisation.} Un outil de s\'ecurit\'e attribue une s\'ev\'erit\'e g\'en\'erique (\emph{HIGH}, \emph{CRITICAL}) \`a chaque r\'esultat. Cette s\'ev\'erit\'e d\'ecrit la classe de probl\`eme en g\'en\'eral, mais ne dit rien sur le fait qu'une vuln\'erabilit\'e pr\'ecise soit r\'eellement exploit\'ee dans le monde r\'eel ou reste purement th\'eorique.
+\end{itemize}
+
+\subsection{Formulation de la probl\'ematique}
+Ces constats conduisent \`a la question suivante~: \emph{comment orchestrer plusieurs outils d'analyse de s\'ecurit\'e statique de sorte que chacun ne re\c{c}oive que les fichiers qui le concernent, que leurs r\'esultats soient fusionn\'es sans perte d'information, et que le rapport produit indique honn\^etement ce qu'il sait, ce qu'il ignore, et ce qui m\'erite d'\^etre corrig\'e en priorit\'e~?}
+
+\section{Objectifs et p\'erim\`etre}
+
+\subsection{Objectif g\'en\'eral et objectifs sp\'ecifiques}
+L'objectif g\'en\'eral du stage est de concevoir et r\'ealiser un outil en ligne de commande qui orchestre Semgrep, Trivy et Gitleaks et produit un rapport de s\'ecurit\'e consolid\'e. Il se d\'ecline en objectifs sp\'ecifiques~:
+\begin{itemize}
+\item concevoir un m\'ecanisme de routage qui envoie \`a chaque outil exactement les fichiers qu'il d\'eclare vouloir traiter~;
+\item fusionner les r\'esultats des trois outils selon une identit\'e stable, sans doublons ni perte de contexte~;
+\item enrichir chaque r\'esultat \`a partir d'une base de connaissances CWE/OWASP et de deux sources publiques d'exploitation r\'eelle (CISA~KEV, FIRST~EPSS)~;
+\item produire un rapport HTML autonome et un rapport JSON, tous deux honn\^etes sur les limites de l'analyse~;
+\item valider l'ensemble par une suite de tests automatis\'es, y compris de bout en bout sur une application volontairement vuln\'erable.
+\end{itemize}
+
+\subsection{P\'erim\`etre retenu}
+Le p\'erim\`etre est volontairement limit\'e \`a l'analyse \textbf{statique}~: analyse de code (SAST), analyse de d\'ependances (SCA) et d\'etection de secrets. Aucune ex\'ecution du code analys\'e n'a lieu, aucune requ\^ete n'est envoy\'ee, et aucun test d'intrusion dynamique (DAST) n'est r\'ealis\'e. Ce choix, discut\'e au chapitre~II, correspond \`a la nature d'un stage d'initiation~: orchestrer des outils \'eprouv\'es plut\^ot que d\'evelopper une capacit\'e de test dynamique, plus complexe et plus risqu\'ee \`a mettre en \oe uvre.
+
+\section{M\'ethode et planning}
+
+\subsection{D\'emarche par phases}
+Le d\'eveloppement a suivi une d\'emarche it\'erative en six phases successives, chacune valid\'ee par sa propre suite de tests avant de passer \`a la suivante~: (1)~mod\`ele de donn\'ees, collecte et routage des fichiers~; (2)~int\'egration des trois analyseurs~; (3)~consolidation et base de connaissances~; (4)~g\'en\'eration du rapport~; (5)~interface en ligne de commande~; (6)~application de d\'emonstration volontairement vuln\'erable et tests de bout en bout. Deux \'evolutions ult\'erieures ont ajout\'e l'enrichissement par donn\'ees d'exploitation r\'eelle (\texttt{exploitability.py}) et la preuve d'usage des d\'ependances (\texttt{dependency\_usage.py}).
+
+\subsection{Planning}
+La figure~\ref{fig:gantt} pr\'esente le d\'eroulement retenu, exprim\'e en semaines relatives au d\'emarrage du stage (les dates calendaires exactes sont \`a renseigner par l'\'etudiant).
+
+\begin{figure}[H]
+\centering
+\begin{ganttchart}[
+  vgrid,
+  hgrid,
+  bar/.append style={fill=accentblue, draw=bluedeep},
+  bar height=0.55,
+  bar label font=\small,
+  title height=1,
+  title label font=\bfseries\small\color{white},
+  title/.style={fill=bluedeep},
+  y unit chart=0.62cm
+]{1}{8}
+\gantttitle{Semaines du stage (\`a dater par l'\'etudiant)}{8} \\
+\gantttitlelist{1,...,8}{1} \\
+\ganttbar{Cadrage \& \'etude des outils}{1}{2} \\
+\ganttbar{Mod\`ele de donn\'ees, collecte, routage}{2}{3} \\
+\ganttbar{Int\'egration Semgrep / Trivy / Gitleaks}{3}{4} \\
+\ganttbar{Consolidation \& base de connaissances}{4}{5} \\
+\ganttbar{G\'en\'eration du rapport HTML/JSON}{5}{6} \\
+\ganttbar{Interface en ligne de commande}{6}{6} \\
+\ganttbar{Appli. de d\'emo \& tests de bout en bout}{6}{7} \\
+\ganttbar{Enrichissement EPSS/KEV \& usage}{7}{8} \\
+\ganttbar{R\'edaction du rapport de stage}{7}{8}
+\end{ganttchart}
+\caption{Planning pr\'evisionnel du stage, en semaines relatives}
+\label{fig:gantt}
+\end{figure}
+
+\subsection{Outils de suivi}
+Le code a \'et\'e organis\'e en modules test\'es individuellement, avec ex\'ecution syst\'ematique de la suite de tests \texttt{pytest} apr\`es chaque phase avant de poursuivre~; ce point est repris au chapitre~IV. \textit{[\`A RENSEIGNER si un outil de gestion de version ou de suivi de t\^aches propre \`a l'organisme d'accueil a \'et\'e utilis\'e.]}
+
+\begin{table}[H]
+\centering
+\caption{Objectifs du stage et livrables associ\'es}
+\label{tab:objectifs}
+\begin{tabularx}{\linewidth}{@{}L L@{}}
+\toprule
+\tablehead Objectif & Livrable attendu \\
+\midrule
+Routage des fichiers par type & Module \texttt{router.py} + \texttt{collector.py} \\
+Int\'egration des trois outils & Package \texttt{scanners/} (5 analyseurs) \\
+Consolidation sans doublon & Module \texttt{consolidator.py} \\
+Priorisation par exploitation r\'eelle & Module \texttt{exploitability.py} \\
+Rapport lisible et honn\^ete & \texttt{reporter.py} + \texttt{reporter\_template.html} \\
+Preuve de fonctionnement & 101 tests automatis\'es (\texttt{tests/}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+% ============================================================================
+% CHAPITRE II
+% ============================================================================
+\chapter{CADRE CONCEPTUEL ET CHOIX DES OUTILS}
+
+Ce chapitre pose les notions de s\'ecurit\'e applicative n\'ecessaires \`a la compr\'ehension du projet, situe les familles d'analyse dans le p\'erim\`etre retenu, puis justifie le choix des trois outils orchestr\'es.
+
+\section{Notions~: vuln\'erabilit\'e, menace, risque}
+Une \textbf{vuln\'erabilit\'e} est une faiblesse dans un syst\`eme -- une erreur de code, une biblioth\`eque obsol\`ete, un secret expos\'e -- susceptible d'\^etre exploit\'ee. Une \textbf{menace} est une action potentielle qui exploiterait cette faiblesse. Le \textbf{risque} r\'esulte de la combinaison des deux, pond\'er\'ee par la probabilit\'e d'exploitation r\'eelle et l'impact m\'etier. C'est pr\'ecis\'ement cette derni\`ere dimension -- la probabilit\'e d'exploitation r\'eelle -- qu'un outil de d\'etection statique ne fournit pas nativement~: il rep\`ere des vuln\'erabilit\'es potentielles, pas des risques mesur\'es. Le chapitre~III revient sur la mani\`ere dont ce projet comble partiellement cet \'ecart.
+
+\section{R\'ef\'erentiels utilis\'es}
+Trois r\'ef\'erentiels publics structurent l'ensemble du projet~:
+\begin{itemize}
+\item \textbf{OWASP Top~10:2021} -- classement des dix cat\'egories de risques applicatifs les plus critiques (par exemple \emph{A03:2021 -- Injection}). Chaque vuln\'erabilit\'e d\'etect\'ee y est rattach\'ee dans le rapport.
+\item \textbf{CWE} (\emph{Common Weakness Enumeration}) -- catalogue de types de faiblesses logicielles, chacune identifi\'ee par un num\'ero (par exemple \texttt{CWE-89} pour l'injection SQL). C'est l'identifiant que les outils de code (Semgrep) rattachent \`a chaque r\`egle.
+\item \textbf{CVE} et la base \textbf{NVD} (\emph{National Vulnerability Database}, NIST) -- identifiants uniques de vuln\'erabilit\'es connues dans des logiciels publi\'es (par exemple \texttt{CVE-2020-8203} pour une biblioth\`eque JavaScript). C'est ce que Trivy consulte pour les d\'ependances.
+\end{itemize}
+
+\section{Familles d'analyse dans le p\'erim\`etre}
+Trois familles d'analyse statique sont couvertes par le projet~:
+\begin{itemize}
+\item \textbf{SAST} (\emph{Static Application Security Testing}) -- analyse du code source \`a la recherche de motifs dangereux (injection, ex\'ecution de code non v\'erifi\'ee, cryptographie faible). Assur\'ee ici par Semgrep.
+\item \textbf{SCA} (\emph{Software Composition Analysis}) -- analyse des d\'ependances d\'eclar\'ees dans les fichiers de verrouillage (\texttt{composer.lock}, \texttt{package-lock.json}) pour y rep\'erer des CVE connues. Assur\'ee par Trivy.
+\item \textbf{D\'etection de secrets} -- recherche de cl\'es d'API, jetons ou mots de passe committ\'es par erreur dans le code source. Assur\'ee par Gitleaks.
+\end{itemize}
+L'analyse dynamique (DAST), qui consisterait \`a ex\'ecuter l'application et \`a l'attaquer r\'eellement, est explicitement exclue du p\'erim\`etre (chapitre~I, section~III.2)~: elle rel\`everait d'un projet distinct, avec des exigences d'autorisation et d'isolement plus lourdes qu'un stage d'initiation.
+
+Parmi ces trois familles, la premi\`ere -- le SAST -- porte l'essentiel du projet~: c'est elle qui couvre le plus grand nombre de types de failles diff\'erents, sur les trois langages du p\'erim\`etre, et c'est elle qui est assur\'ee par l'outil retenu comme pilier central, Semgrep. La section suivante explique cette famille en d\'etail, avant de justifier ce choix.
+
+\section{Le SAST expliqu\'e simplement}
+
+\subsection{Le principe~: lire le code plut\^ot que l'ex\'ecuter}
+Un correcteur orthographique ne comprend pas le sens d'un texte~: il compare chaque mot \`a des r\`egles connues (orthographe, accord, ponctuation) et signale ce qui s'\'ecarte de ces r\`egles, sans jamais ex\'ecuter le texte. Un outil de SAST proc\`ede de la m\^eme mani\`ere, mais sur du code source plut\^ot que sur de la prose~: il lit le code sans jamais le lancer, et compare sa structure \`a une biblioth\`eque de \guillemotleft~motifs dangereux~\guillemotright\ connus -- une variable venant directement d'une requ\^ete utilisateur qui se retrouve dans une commande SQL, un mot de passe \'ecrit en clair dans le code, une fonction de hachage jug\'ee trop faible pour prot\'eger un mot de passe. D\`es qu'une correspondance est trouv\'ee, l'outil produit un \emph{finding}~: l'emplacement exact, le motif reconnu, et une explication.
+
+\begin{infobox}{En clair}
+Le SAST ne devine rien et n'attaque rien~: il lit le code, comme un correcteur orthographique lit un texte, et signale ce qui ressemble \`a une erreur connue. C'est rapide, automatisable, et totalement sans risque pour l'application analys\'ee -- puisqu'elle n'est jamais ex\'ecut\'ee.
+\end{infobox}
+
+\subsection{Pourquoi un simple \guillemotleft~chercher dans le texte~\guillemotright\ ne suffit pas}
+Une premi\`ere id\'ee, na\"ive, consisterait \`a chercher directement des mots-cl\'es dangereux dans le fichier source, comme le ferait un simple \texttt{grep}. Cette approche \'echoue rapidement~: le mot \texttt{query} peut appara\^itre dans un commentaire inoffensif, dans le nom d'une variable sans rapport, ou dans un appel r\'eellement dangereux -- une recherche de texte ne fait pas la diff\'erence. Semgrep, comme la plupart des outils de SAST s\'erieux, proc\`ede autrement~: il transforme d'abord le code source en une repr\'esentation de sa \textbf{structure} (un arbre syntaxique, qui distingue une d\'eclaration de variable, un appel de fonction, une condition, un commentaire), puis compare des \emph{motifs structurels} \`a cet arbre plut\^ot que du texte brut. La figure~\ref{fig:sast-principe} illustre ce cheminement.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  step/.style={draw=accentblue, thick, rounded corners=6pt, minimum height=1.2cm, minimum width=2.9cm, align=center, font=\footnotesize, fill=bluewash},
+  hi/.style={draw=bloodred, thick, rounded corners=6pt, minimum height=1.2cm, minimum width=2.9cm, align=center, font=\footnotesize, fill=bloodredwash},
+  lbl/.style={font=\scriptsize\itshape, color=muted},
+  >=Stealth, node distance=1.3cm
+]
+\node[step] (src) {Code source\\\texttt{\footnotesize\$q = ... . \$\_GET}};
+\node[step, right=of src] (ast) {Arbre syntaxique\\(structure du code)};
+\node[hi, right=of ast] (rule) {R\`egle Semgrep\\\guillemotleft~entr\'ee utilisateur $\to$ requ\^ete SQL~\guillemotright};
+\node[hi, right=of rule] (find) {Correspondance trouv\'ee\\$\to$ \texttt{Finding}};
+\draw[->, thick, color=bluedeep] (src) -- (ast) node[midway, above, lbl]{analyse};
+\draw[->, thick, color=bluedeep] (ast) -- (rule) node[midway, above, lbl]{comparaison};
+\draw[->, thick, color=bloodred] (rule) -- (find) node[midway, above, lbl]{motif reconnu};
+\end{tikzpicture}
+\caption{Principe du SAST~: du code source \`a la vuln\'erabilit\'e signal\'ee, sans jamais ex\'ecuter le programme}
+\label{fig:sast-principe}
+\end{figure}
+
+Cette diff\'erence a une cons\'equence concr\`ete et v\'erifi\'ee dans ce projet~: une r\`egle Semgrep reconna\^it \guillemotleft~une variable issue d'une entr\'ee utilisateur qui atteint une requ\^ete SQL~\guillemotright\ quel que soit le nom donn\'e \`a cette variable, alors qu'une simple recherche de texte devrait deviner \`a l'avance tous les noms possibles. C'est cette compr\'ehension structurelle qui permet \`a une seule r\`egle de couvrir des dizaines de variantes d'\'ecriture du m\^eme probl\`eme.
+
+\section{Comparaison et choix des outils}
+
+\subsection{Crit\`eres de s\'election}
+Quatre crit\`eres ont guid\'e le choix des outils \`a orchestrer~: la gratuit\'e (aucune licence commerciale requise pour un usage de d\'emonstration), une sortie exploitable par programme (JSON document\'e), la couverture des langages du p\'erim\`etre (PHP, JavaScript/TypeScript, Python), et la portabilit\'e -- l'outil devant fonctionner aussi bien sous Windows natif que sous Linux/WSL.
+
+\subsection{Matrice comparative}
+Le tableau~\ref{tab:comparatif} r\'esume la comparaison effectu\'ee entre les outils \'etudi\'es et les trois finalement retenus.
+
+\begin{table}[H]
+\centering
+\caption{Comparaison des outils \'etudi\'es par famille d'analyse}
+\label{tab:comparatif}
+\begin{tabularx}{\linewidth}{@{}l L c c c@{}}
+\toprule
+\tablehead Famille & Outils \'etudi\'es & Gratuit & Sortie JSON & Retenu \\
+\midrule
+SAST & \textbf{Semgrep}, SonarQube, PHPStan/Bandit (mono-langage) & Oui & Oui & \textbf{Semgrep} \\
+SCA & \textbf{Trivy}, OWASP Dependency-Check, Snyk & Oui & Oui & \textbf{Trivy} \\
+Secrets & \textbf{Gitleaks}, TruffleHog & Oui & Oui & \textbf{Gitleaks} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Semgrep, l'outil central du dispositif}
+Semgrep a \'et\'e pr\'ef\'er\'e \`a des outils mono-langage (PHPStan pour PHP, Bandit pour Python) pour une raison simple~: un seul outil, avec un jeu de r\`egles distinct par langage, couvre les trois langages du p\'erim\`etre. Avec des outils mono-langage, il aurait fallu en int\'egrer, configurer et maintenir trois s\'epar\'ement -- soit exactement la dispersion d\'ecrite comme probl\`eme au chapitre~I.
+
+C'est ce r\^ole qui fait de Semgrep l'outil \textbf{essentiel} du projet, et non un outil parmi trois \'equivalents~: il couvre \`a lui seul la famille de failles la plus large -- injection SQL, ex\'ecution de commande syst\`eme, script intersite (XSS), cryptographie faible, g\'en\'erateur al\'eatoire non s\'ecuris\'e -- sur l'ensemble des trois langages analys\'es, l\`a o\`u Trivy se limite aux d\'ependances et Gitleaks aux secrets. Dans l'architecture du projet, cette centralit\'e se retrouve directement~: les trois analyseurs de code (PHP, JavaScript, Python) partagent une seule et m\^eme impl\'ementation Semgrep (\texttt{SemgrepScanner}, d\'etaill\'ee au chapitre~III), alors que Trivy et Gitleaks sont chacun impl\'ement\'es une seule fois, pour une seule t\^ache.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering\vspace{3.2cm}\textit{[Capture d'\'ecran \`a ins\'erer -- ex\'ecution r\'eelle de \texttt{semgrep scan} sur \texttt{sample\_vuln\_app}, montrant les fichiers analys\'es et le nombre de r\'esultats trouv\'es]}\vspace{3.2cm}}}
+% \includegraphics[width=0.92\linewidth]{figures/ii1-semgrep-run.png}
+\caption{Ex\'ecution r\'eelle de Semgrep sur l'application de d\'emonstration}
+\label{fig:semgrep-run}
+\end{figure}
+
+\subsection{Trivy et Gitleaks~: deux compl\'ements cibl\'es}
+Trivy et Gitleaks ont \'et\'e retenus pour la m\^eme raison de simplicit\'e d'int\'egration que Semgrep~: ex\'ecutables autonomes, sortie JSON stable, gratuits pour un usage sans limite de volume. Leur r\^ole reste cependant volontairement \'etroit compar\'e \`a celui de Semgrep~: Trivy ne fait qu'une chose -- comparer les versions de paquets d\'eclar\'ees dans un fichier de verrouillage \`a une base de vuln\'erabilit\'es connues -- et Gitleaks n'en fait qu'une autre -- rep\'erer des motifs qui ressemblent \`a des secrets. Aucun des deux ne lit ni ne comprend la logique du code applicatif~: c'est pr\'ecis\'ement le travail confi\'e \`a Semgrep.
+
+\section{Enrichissement par donn\'ees d'exploitation r\'eelle}
+Deux sources publiques, gratuites et mises \`a jour quotidiennement, permettent de distinguer une vuln\'erabilit\'e th\'eorique d'une vuln\'erabilit\'e r\'eellement attaqu\'ee~:
+\begin{itemize}
+\item \textbf{FIRST EPSS} (\emph{Exploit Prediction Scoring System}) -- un mod\`ele statistique qui estime, pour chaque CVE, la probabilit\'e qu'elle soit exploit\'ee dans les 30~jours suivants. La grande majorit\'e des CVE ont un score inf\'erieur \`a 1~\%.
+\item \textbf{CISA KEV} (\emph{Known Exploited Vulnerabilities}) -- un catalogue tenu par l'agence am\'ericaine CISA, listant les vuln\'erabilit\'es dont l'exploitation active a \'et\'e confirm\'ee. Figurer dans ce catalogue est le signal le plus fort qui existe publiquement.
+\end{itemize}
+Ces deux sources ne remplacent pas la s\'ev\'erit\'e attribu\'ee par l'outil~: elles r\'epondent \`a une question diff\'erente -- non pas \guillemotleft~quelle est la gravit\'e g\'en\'erale de ce type de faille~?~\guillemotright, mais \guillemotleft~cette faille pr\'ecise est-elle effectivement attaqu\'ee aujourd'hui~?~\guillemotright.
+
+\section{Positionnement de la solution propos\'ee}
+La valeur du projet ne r\'eside pas dans une nouvelle capacit\'e de d\'etection~: Semgrep, appuy\'e par Trivy et Gitleaks, d\'etecte d\'ej\`a tr\`es bien dans son domaine. Elle r\'eside dans trois apports~: le \textbf{routage}, qui \'evite de soumettre chaque fichier \`a chaque outil~; la \textbf{consolidation}, qui fusionne des r\'esultats h\'et\'erog\`enes en une liste unique et coh\'erente~; et la \textbf{restitution honn\^ete}, qui indique explicitement ce que le rapport ne peut pas garantir. Ce dernier point, d\'evelopp\'e au chapitre~III, distingue ce projet d'un simple script d'automatisation~: chaque affirmation du rapport est accompagn\'ee de sa limite.
+
+\begin{table}[H]
+\centering
+\caption{Extrait de la correspondance CWE~$\to$~OWASP impl\'ement\'ee (\texttt{knowledge.py}, 30~entr\'ees au total -- liste compl\`ete en annexe~C)}
+\label{tab:cwe-owasp}
+\begin{tabularx}{\linewidth}{@{}l L@{}}
+\toprule
+\tablehead CWE & Cat\'egorie OWASP Top~10:2021 \\
+\midrule
+CWE-89 (injection SQL) & A03:2021 -- Injection \\
+CWE-79 (XSS) & A03:2021 -- Injection \\
+CWE-78 (injection de commande OS) & A03:2021 -- Injection \\
+CWE-798 (identifiants cod\'es en dur) & A07:2021 -- Identification et authentification d\'efaillantes \\
+CWE-327 (algorithme cryptographique faible) & A02:2021 -- D\'efaillances cryptographiques \\
+CWE-22 (traversal de chemin) & A01:2021 -- Contr\^ole d'acc\`es d\'efaillant \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+% ============================================================================
+% CHAPITRE III
+% ============================================================================
+\chapter{CONCEPTION DE LA SOLUTION}
+
+Ce chapitre pr\'esente l'architecture retenue, le m\'ecanisme central de routage des fichiers, le mod\`ele de donn\'ees et la gestion des exclusions.
+
+\section{Besoins fonctionnels et non fonctionnels}
+
+Les besoins fonctionnels d\'ecoulent directement des objectifs du chapitre~I~: proposer un menu interactif permettant de choisir un type d'analyse ou de tout ex\'ecuter (figure~\ref{fig:usecase}), acheminer chaque fichier collect\'e vers le bon analyseur, fusionner et enrichir les r\'esultats, puis produire un rapport HTML et un rapport JSON.
+
+Les besoins non fonctionnels sont plus contraignants~: une empreinte m\'emoire faible (les fichiers sont lus en flux, jamais charg\'es int\'egralement pour l'ensemble du projet), l'absence de base de donn\'ees (les seules persistances sont des fichiers JSON, dont un cache de 24~heures pour les donn\'ees d'exploitation), une biblioth\`eque standard privil\'egi\'ee -- seuls \texttt{jinja2}, \texttt{pygments}, \texttt{rich} et \texttt{pytest} sont des d\'ependances r\'eelles -- et un fonctionnement identique sous Windows natif et sous Linux/WSL, obtenu en n'utilisant que \texttt{pathlib} et \texttt{shutil.which} plut\^ot que des appels sp\'ecifiques \`a un syst\`eme.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  actor/.style={draw=bluedeep, thick, minimum height=1.4cm, font=\small},
+  usecase/.style={draw=accentblue, thick, rounded corners=12pt, minimum width=3.6cm, minimum height=0.9cm, align=center, font=\small, fill=bluewash},
+  >=Stealth
+]
+\node[actor] (user) at (0,0) {\'Etudiant /\\utilisateur};
+\node[usecase] (menu) at (4.2,2.4) {Choisir un type\\d'analyse (menu)};
+\node[usecase] (all) at (4.2,1.1) {Lancer\\\texttt{--all}};
+\node[usecase] (one) at (4.2,-0.2) {Lancer\\\texttt{--scan <type>}};
+\node[usecase] (offline) at (4.2,-1.5) {Lancer en mode\\\texttt{--offline}};
+\node[usecase] (report) at (9.2,0.4) {Consulter le\\rapport HTML/JSON};
+\draw[->] (user) -- (menu);
+\draw[->] (user) -- (all);
+\draw[->] (user) -- (one);
+\draw[->] (user) -- (offline);
+\draw[->] (menu) -- (report);
+\draw[->] (all) -- (report);
+\draw[->] (one) -- (report);
+\draw[->] (offline) -- (report);
+\end{tikzpicture}
+\caption{Diagramme de cas d'utilisation de l'interface en ligne de commande}
+\label{fig:usecase}
+\end{figure}
+
+\section{Architecture}
+
+\subsection{Flux unidirectionnel, module unique d'orchestration}
+L'architecture repose sur un principe unique~: \texttt{main.py} est le \textbf{seul} module qui appelle les autres, et les donn\'ees ne circulent que dans un sens, du dossier analys\'e jusqu'au rapport final. Aucun module n'appelle un autre module en dehors de cette cha\^ine~: cette contrainte, respect\'ee dans tout le code, permet de comprendre le programme entier en lisant une seule fonction, \texttt{run\_scans()}, du d\'ebut \`a la fin.
+
+\subsection{Le pipeline r\'eel}
+La figure~\ref{fig:pipeline} reproduit exactement l'ench\^ainement impl\'ement\'e dans \texttt{run\_scans()}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  stage/.style={draw=accentblue, thick, rounded corners=6pt, minimum height=1cm, minimum width=2.55cm, align=center, font=\scriptsize, fill=bluewash},
+  lbl/.style={font=\scriptsize\itshape, color=muted},
+  >=Stealth, node distance=0.55cm
+]
+\node[stage] (excl) {\texttt{excludes}\\\texttt{.prepare()}};
+\node[stage, right=of excl] (coll) {\texttt{collector}\\\texttt{.collect()}};
+\node[stage, right=of coll] (rout) {\texttt{router}\\\texttt{.route()}};
+\node[stage, right=of rout] (scan) {\texttt{scanners}\\\texttt{.run()}};
+\node[stage, right=of scan] (expl) {\texttt{exploitability}\\\texttt{.fetch()}};
+
+\node[stage, below=1.1cm of expl] (cons) {\texttt{consolidator}\\\texttt{.merge()}};
+\node[stage, left=of cons] (use) {\texttt{dependency\_usage}\\\texttt{.enrich()}};
+\node[stage, left=of use] (rep) {\texttt{reporter}\\\texttt{.write()}};
+
+\draw[->, thick, color=bluedeep] (excl) -- (coll);
+\draw[->, thick, color=bluedeep] (coll) -- (rout) node[midway, above, lbl]{\texttt{FileSet}};
+\draw[->, thick, color=bluedeep] (rout) -- (scan);
+\draw[->, thick, color=bluedeep] (scan) -- (expl) node[midway, above, lbl]{\texttt{Finding[]}};
+\draw[->, thick, color=bluedeep] (expl) -- (cons);
+\draw[->, thick, color=bluedeep] (cons) -- (use);
+\draw[->, thick, color=bloodred] (use) -- (rep) node[midway, above, lbl]{rapport final};
+\end{tikzpicture}
+\caption{Pipeline r\'eel impl\'ement\'e dans \texttt{run\_scans()} (\texttt{main.py})}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{R\^ole de chaque module}
+Le tableau~\ref{tab:modules} reprend, pour chaque module, ce qu'il re\c{c}oit, ce qu'il produit et par qui il est appel\'e -- convention respect\'ee dans un commentaire d'en-t\^ete de chaque fichier source.
+
+\begin{table}[H]
+\centering
+\caption{R\^ole de chaque module du pipeline}
+\label{tab:modules}
+\begin{tabularx}{\linewidth}{@{}l L L@{}}
+\toprule
+\tablehead Module & Re\c{c}oit / Produit & Appel\'e par \\
+\midrule
+\texttt{excludes.py} & dossier cible $\to$ liste d'exclusion + 3~formats natifs & \texttt{main.py}, \texttt{collector.py} \\
+\texttt{collector.py} & chemin $\to$ un \texttt{FileSet} (un seul parcours) & \texttt{main.py} \\
+\texttt{router.py} & \texttt{FileSet} + analyseur $\to$ sous-ensemble routé & \texttt{main.py} \\
+\texttt{scanners/*.py} & sous-ensemble rout\'e $\to$ \texttt{Finding[]} complets & \texttt{main.py} \\
+\texttt{exploitability.py} & identifiants CVE $\to$ catalogue KEV/EPSS & \texttt{main.py}, \texttt{consolidator.py} \\
+\texttt{consolidator.py} & toutes les listes $\to$ liste d\'edoublonn\'ee, tri\'ee & \texttt{main.py} \\
+\texttt{dependency\_usage.py} & findings + \texttt{FileSet} $\to$ preuve d'usage & \texttt{main.py} \\
+\texttt{reporter.py} & liste finale $\to$ \texttt{report.html} + \texttt{report.json} & \texttt{main.py} \\
+\texttt{models.py} & -- $\to$ \texttt{Finding}, \texttt{Severity}, \texttt{FileSet} & tous les modules \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Les d\'ependances entre modules ne vont que dans un sens~: tous les modules peuvent importer \texttt{models.py}~; \texttt{main.py} importe tous les autres~; un analyseur n'importe que \texttt{scanners/base.py} et \texttt{models.py}~; \texttt{consolidator.py} importe \texttt{knowledge.py} et \texttt{exploitability.py}~; \texttt{dependency\_usage.py} n'importe que \texttt{models.py}. Ce graphe est v\'erifi\'e sans cycle et sur deux niveaux de profondeur au maximum.
+
+\section{Le routage des fichiers -- c\oe ur de la solution}
+
+\subsection{Principe~: un seul parcours du dossier}
+Le dossier cible n'est parcouru \textbf{qu'une seule fois}, par \texttt{collector.py}, qui regroupe chaque fichier rencontr\'e dans un \texttt{FileSet}~: un dictionnaire dont la cl\'e est soit une extension (\texttt{.php}), soit un nom de fichier exact pour les fichiers de verrouillage (\texttt{package-lock.json}), afin que l'analyseur de d\'ependances puisse cibler pr\'ecis\'ement ces fichiers.
+
+\subsection{Le routeur comme simple intersection}
+\texttt{router.py} ne conna\^it rien au langage PHP, ni \`a aucun autre langage~: il se contente de calculer une \textbf{intersection} entre les fichiers collect\'es (\texttt{FileSet}) et la d\'eclaration \texttt{file\_types} de l'analyseur demand\'e -- exactement comme on cherche ce que deux ensembles ont en commun. Toute la connaissance des types de fichiers appartient \`a l'analyseur, jamais au routeur.
+
+\begin{infobox}{En clair}
+Le routeur ne \guillemotleft~sait~\guillemotright\ rien~: chaque analyseur affiche une \'etiquette (\guillemotleft~je veux les \texttt{.php}~\guillemotright, \guillemotleft~je veux les fichiers de verrouillage~\guillemotright), et le routeur se contente de lire cette \'etiquette pour distribuer les fichiers. C'est ce qui permet d'ajouter un langage suppl\'ementaire sans toucher au routeur lui-m\^eme~: il suffit d'ajouter un nouvel analyseur avec sa propre \'etiquette.
+\end{infobox}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  ens/.style={draw=accentblue, thick, circle, minimum size=2.6cm, fill=bluewash, font=\scriptsize, align=center},
+  ens2/.style={draw=bloodred, thick, circle, minimum size=2.6cm, fill=bloodredwash, font=\scriptsize, align=center},
+  lbl/.style={font=\scriptsize\itshape, color=muted}
+]
+\node[ens] (fs) at (0,0) {};
+\node[ens2] (ft) at (1.7,0) {};
+\node at (-0.9,0) [align=center, font=\scriptsize] {\texttt{FileSet}\(tous les fichiers\collect\'es)};
+\node at (2.6,0) [align=center, font=\scriptsize] {\texttt{file\_types}\(d\'eclar\'e par\l'analyseur)};
+\node[font=\bfseries\small\color{bluedeep}] at (0.85,0) {$\cap$};
+\node[lbl] at (0.85,-2cm) {le sous-ensemble transmis \`a l'analyseur};
+\draw[->, thick, color=bluedeep] (0.85,-1.6cm) -- (0.85,-0.55cm);
+\end{tikzpicture}
+\caption{Le routage n'est qu'une intersection entre les fichiers collect\'es et ce que l'analyseur d\'eclare vouloir}
+\label{fig:routage-intersection}
+\end{figure}
+
+\subsection{Extensibilit\'e}
+Ajouter un langage suppl\'ementaire ne demande qu'un nouveau fichier d'analyseur, d\'eclarant ses extensions et ses jeux de r\`egles, et une ligne ajout\'ee \`a une liste unique, \texttt{ALL\_SCANNERS} (\texttt{scanners/\_\_init\_\_.py}). Cette liste est \'egalement ce qui g\'en\`ere le menu interactif~: le menu, les choix de l'option \texttt{--scan} et le mode \texttt{--all} en sont trois vues diff\'erentes, ce qui emp\^eche qu'ils divergent entre eux -- toucher \`a la liste, c'est toucher aux trois \`a la fois.
+
+Un cas m\'erite d'\^etre expliqu\'e~: l'analyseur de secrets d\'eclare \texttt{file\_types~=~\{"*"\}} et re\c{c}oit donc tous les fichiers collect\'es. Ce n'est pas une anomalie du routage mais son fonctionnement normal~: chaque analyseur re\c{c}oit exactement ce qu'il a d\'eclar\'e vouloir, et Gitleaks a d\'eclar\'e vouloir tout, puisqu'un secret peut appara\^itre dans n'importe quel type de fichier.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  bucket/.style={draw=accentblue, rounded corners=4pt, minimum width=2.1cm, minimum height=0.75cm, font=\scriptsize, fill=bluewash},
+  scan/.style={draw=bloodred, rounded corners=4pt, minimum width=2.6cm, minimum height=0.75cm, font=\scriptsize, fill=bloodredwash},
+  >=Stealth
+]
+\node[bucket] (php) at (0,2.2) {\texttt{.php} (3)};
+\node[bucket] (js) at (0,1.1) {\texttt{.js/.ts} (3)};
+\node[bucket] (py) at (0,0) {\texttt{.py} (1)};
+\node[bucket] (lock) at (0,-1.1) {\texttt{*.lock} (2)};
+\node[bucket] (all) at (0,-2.4) {tous (11)};
+
+\node[scan] (s1) at (5.5,2.2) {PHP -- Semgrep \texttt{p/php}};
+\node[scan] (s2) at (5.5,1.1) {JS/TS -- Semgrep (3~jeux)};
+\node[scan] (s3) at (5.5,0) {Python -- Semgrep \texttt{p/python}};
+\node[scan] (s4) at (5.5,-1.1) {D\'ependances -- Trivy};
+\node[scan] (s5) at (5.5,-2.4) {Secrets -- Gitleaks (\texttt{*})};
+
+\draw[->, color=bluedeep] (php) -- (s1);
+\draw[->, color=bluedeep] (js) -- (s2);
+\draw[->, color=bluedeep] (py) -- (s3);
+\draw[->, color=bluedeep] (lock) -- (s4);
+\draw[->, color=bloodred] (all) -- (s5);
+\end{tikzpicture}
+\caption{Sch\'ema du routage sur l'application de d\'emonstration (effectifs r\'eels observ\'es, chapitre~IV)}
+\label{fig:routage}
+\end{figure}
+
+\section{Mod\`ele de donn\'ees}
+
+\subsection{La classe \texttt{Finding}}
+Chaque r\'esultat, qu'il vienne de Semgrep, Trivy ou Gitleaks, est repr\'esent\'e par une m\^eme structure \texttt{Finding}~: fichier, ligne, identifiant de r\`egle, message, s\'ev\'erit\'e, outil source, niveau de confiance, CWE, extrait de code, puis des champs d'enrichissement remplis plus tard (cat\'egorie OWASP, remédiation, statut d'exploitation r\'eelle, preuve d'usage).
+
+\subsection{L'\'echelle de s\'ev\'erit\'e}
+Les s\'ev\'erit\'es sont ordonn\'ees (\texttt{INFO~<~LOW~<~MEDIUM~<~HIGH~<~CRITICAL}) et les vocabulaires propres \`a chaque outil y sont ramen\'es~: par exemple, \texttt{ERROR} chez Semgrep devient \texttt{HIGH}, \texttt{WARNING} devient \texttt{MEDIUM}.
+
+\subsection{L'empreinte d'identit\'e}
+Chaque \texttt{Finding} expose une propri\'et\'e \texttt{fingerprint} qui d\'etermine son identit\'e pour la d\'eduplication~: pour un r\'esultat de code, le triplet \texttt{(fichier, ligne, identifiant\_de\_r\`egle)}~; pour un r\'esultat de d\'ependance, le couple \texttt{(paquet, avis)} -- \textbf{jamais} un num\'ero de ligne.
+
+\begin{lstlisting}[language=Python, caption={L'identit\'e d'un finding lui appartient (\texttt{models.py})}, label={lst:fingerprint}]
+@property
+def fingerprint(self) -> tuple:
+    """Stable identity used for deduplication."""
+    if self.advisory_id:
+        return ("dep", self.package, self.advisory_id)
+    return ("code", self.file, self.line, self.rule_id)
+\end{lstlisting}
+
+Cette r\`egle a une cons\'equence directe~: la ligne o\`u appara\^it un paquet dans un fichier de verrouillage peut se d\'eplacer \`a chaque modification du fichier, sans rapport avec la vuln\'erabilit\'e elle-m\^eme. Si l'identit\'e incluait la ligne, une simple r\'eorganisation du fichier ferait appara\^itre une vuln\'erabilit\'e comme \guillemotleft~nouvelle~\guillemotright\ \`a chaque analyse, m\^eme si elle \'etait d\'ej\`a connue.
+
+\begin{infobox}{En clair}
+Pour un r\'esultat de code, l'identit\'e est \guillemotleft~cette r\`egle, sur cette ligne, dans ce fichier~\guillemotright. Pour une d\'ependance, l'identit\'e est \guillemotleft~ce paquet, avec cet avis de s\'ecurit\'e~\guillemotright -- jamais un num\'ero de ligne, qui n'a aucun rapport avec la vuln\'erabilit\'e et changerait \`a chaque modification du fichier.
+\end{infobox}
+
+\section{Une liste d'exclusions, trois projections natives}
+Les outils externes parcourent eux-m\^emes le syst\`eme de fichiers~: une liste d'exclusion interne au programme Python, si elle n'\'etait pas transmise \`a chaque outil dans son propre format, ne les prot\'egerait pas. \texttt{excludes.py} maintient donc \textbf{une seule} liste (\texttt{.git}, \texttt{node\_modules}, \texttt{vendor}, le dossier de sortie du rapport lui-m\^eme, ainsi que les motifs d'un fichier \texttt{.secignore} propre au projet analys\'e), et la projette dans le format natif de chaque outil~: arguments \texttt{--exclude} pour Semgrep, \texttt{--skip-dirs} pour Trivy, et un fichier de configuration TOML g\'en\'er\'e pour Gitleaks.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  src/.style={draw=bloodred, thick, rounded corners=6pt, minimum width=3.4cm, minimum height=1cm, font=\small, fill=bloodredwash},
+  dst/.style={draw=accentblue, rounded corners=4pt, minimum width=4.6cm, minimum height=0.85cm, font=\scriptsize, fill=bluewash},
+  >=Stealth
+]
+\node[src] (list) {Liste unique\\\texttt{excludes.py}};
+\node[dst] (a) at (5.6,1.3) {\texttt{--exclude ...} (Semgrep)};
+\node[dst] (b) at (5.6,0) {\texttt{--skip-dirs ...} (Trivy)};
+\node[dst] (c) at (5.6,-1.3) {\texttt{gitleaks\_config.toml} (Gitleaks)};
+\draw[->, thick, color=bluedeep] (list) -- (a);
+\draw[->, thick, color=bluedeep] (list) -- (b);
+\draw[->, thick, color=bluedeep] (list) -- (c);
+\end{tikzpicture}
+\caption{Une liste d'exclusion, trois projections natives -- aucun outil ne conna\^it le rapport qu'il produit lui-m\^eme}
+\label{fig:excludes}
+\end{figure}
+
+Cette conception rend impossible, par construction, le sc\'enario o\`u un outil signalerait son propre fichier de rapport ou de cache comme une vuln\'erabilit\'e -- situation v\'erifi\'ee explicitement par un test plaçant le dossier de rapport \emph{\`a l'int\'erieur} du projet analys\'e et ex\'ecutant deux analyses successives (chapitre~IV, section~VI).
+
+\begin{infobox}{En clair}
+Une seule liste \`a tenir \`a jour, jamais trois. Et parce que cette liste est \'ecrite dans le \guillemotleft~dialecte~\guillemotright\ de chaque outil, aucun des trois ne peut, par accident, analyser son propre rapport ou celui d'un autre outil.
+\end{infobox}
+
+\section{Conception de la base de connaissances et de l'enrichissement}
+Trois modules enrichissent un \texttt{Finding} apr\`es sa cr\'eation, sans jamais rouvrir le fichier source (l'extrait de code a d\'ej\`a \'et\'e captur\'e au moment de l'analyse par l'analyseur lui-m\^eme)~:
+\begin{itemize}
+\item \texttt{knowledge.py} fait correspondre chaque CWE \`a sa cat\'egorie OWASP, une explication de correction, et un sc\'enario d'attaque \textbf{illustratif} -- un exemple p\'edagogique, jamais ex\'ecut\'e~;
+\item \texttt{exploitability.py} interroge CISA~KEV et FIRST~EPSS pour les identifiants CVE pr\'esents, avec une r\`egle stricte~: une interrogation qui \'echoue rend le statut \guillemotleft~inconnu~\guillemotright, jamais \guillemotleft~non exploit\'e~\guillemotright~;
+\item \texttt{dependency\_usage.py} recherche, dans le code source d\'ej\`a collect\'e, une r\'ef\'erence directe au paquet vuln\'erable (un \texttt{import} ou un \texttt{require}). Ce n'est pas une analyse d'atteignabilit\'e~: trouver une r\'ef\'erence prouve un usage, mais l'absence de r\'ef\'erence directe ne prouve jamais qu'un paquet est inutilis\'e, car un framework peut le charger indirectement.
+\end{itemize}
+
+\section{Conception du rapport}
+Le rapport doit satisfaire une exigence centrale~: ne jamais laisser une absence d'information appara\^itre comme une preuve d'absence de probl\`eme. Concr\`etement, cela se traduit par trois d\'ecisions de conception, reprises et illustr\'ees au chapitre~IV~: un tableau montrant les fichiers r\'eellement rout\'es vers chaque analyseur, un statut explicite par analyse (\emph{ex\'ecut\'e}, \emph{aucun fichier correspondant}, \emph{partiel}, \emph{\'echou\'e}) plut\^ot qu'un simple compte de r\'esultats, et une section \guillemotleft~Limites~\guillemotright\ qui accompagne chaque affirmation du rapport.
+
+
+% ============================================================================
+% CHAPITRE IV
+% ============================================================================
+\chapter{R\'EALISATION, TESTS ET R\'ESULTATS}
+
+Ce dernier chapitre d\'ecrit l'impl\'ementation effective, l'interface obtenue, les tests conduits et les r\'esultats mesur\'es sur l'application de d\'emonstration -- sans dissimuler les limites constat\'ees.
+
+\section{Environnement mat\'eriel et logiciel}
+Le d\'eveloppement a \'et\'e r\'ealis\'e sous Windows~11, avec Python en version~3.14. Les trois outils orchestr\'es ont \'et\'e install\'es localement et sont d\'etect\'es automatiquement via \texttt{shutil.which}~; en leur absence, l'analyse correspondante est proprement ignor\'ee (message \texttt{skip:}) plut\^ot que de provoquer un arr\^et du programme.
+
+\begin{table}[H]
+\centering
+\caption{Environnement logiciel utilis\'e lors du d\'eveloppement}
+\label{tab:versions}
+\begin{tabularx}{\linewidth}{@{}l L@{}}
+\toprule
+\tablehead Composant & Version constat\'ee \\
+\midrule
+Python & 3.14.0 \\
+Semgrep & 1.172.0 \\
+Trivy & 0.72.0 \\
+Gitleaks & 8.30.1 \\
+Biblioth\`eques Python r\'eelles & \texttt{jinja2}, \texttt{pygments}, \texttt{rich}, \texttt{pytest} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Impl\'ementation du pipeline}
+
+\subsection{Collecte, exclusion, routage}
+\texttt{collector.py} parcourt le dossier cible une seule fois avec \texttt{os.walk}, en \'elaguant directement les dossiers exclus pour ne jamais les parcourir. Les fichiers sont group\'es par extension ou, pour les fichiers de verrouillage reconnus, par nom exact.
+
+\subsection{Contrat commun des analyseurs}
+Tous les analyseurs h\'eritent d'une classe de base commune (\texttt{scanners/base.py}) qui garantit deux comportements~: la d\'egradation gracieuse quand l'outil externe n'est pas install\'e (retour d'une liste vide plut\^ot qu'une exception), et la capture de l'extrait de code -- la ligne signal\'ee, entour\'ee de deux lignes de contexte -- au moment m\^eme de l'analyse, en lisant le fichier en flux plut\^ot qu'en le chargeant int\'egralement.
+
+\subsection{Int\'egration des trois outils}
+L'int\'egration de Semgrep a r\'ev\'el\'e une limite concr\`ete du jeu de r\`egles g\'en\'eraliste~: le jeu \texttt{p/javascript} seul ne remontait aucun r\'esultat sur du JavaScript ordinaire, hors framework. Cette observation, faite en confrontant l'outil \`a l'application de d\'emonstration, a conduit \`a combiner trois jeux de r\`egles pour le JavaScript (\texttt{p/javascript}, \texttt{p/eslint-plugin-security}, \texttt{p/nodejsscan}), ce qui explique pourquoi la d\'eclaration \texttt{rulesets} d'un analyseur est une liste et non une simple cha\^ine.
+
+Pour les d\'ependances, Trivy est invoqu\'e une fois par fichier de verrouillage rout\'e. Une absence totale de sortie -- le plus souvent caus\'ee par une base de vuln\'erabilit\'es non t\'el\'echargeable -- est trait\'ee comme un \'echec explicite de l'analyse, et non comme un r\'esultat \guillemotleft~z\'ero vuln\'erabilit\'e~\guillemotright, qui aurait \'et\'e trompeur.
+
+Pour les secrets, Gitleaks est ex\'ecut\'e avec l'option \texttt{--redact}, de sorte que la valeur du secret ne soit jamais \'ecrite, m\^eme dans la sortie brute de l'outil. Côt\'e rapport, l'extrait de code masque \'egalement toute valeur secr\`ete voisine se trouvant dans les deux lignes de contexte -- un point corrig\'e apr\`es qu'un test a montr\'e qu'un premier masquage, limit\'e \`a la ligne signal\'ee, laissait passer un secret situ\'e sur la ligne adjacente.
+
+\section{Interface en ligne de commande}
+L'ex\'ecution sans argument affiche un menu g\'en\'er\'e directement \`a partir de la liste unique \texttt{ALL\_SCANNERS} pr\'esent\'ee au chapitre~III~; les options \texttt{--scan~<type>}, \texttt{--all} et \texttt{--offline} permettent un usage non interactif, adapt\'e \`a une int\'egration continue.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering\vspace{3.4cm}\textit{[Capture d'\'ecran \`a ins\'erer -- menu interactif obtenu par \texttt{python main.py sample\_vuln\_app}]}\vspace{3.4cm}}}
+% \includegraphics[width=0.92\linewidth]{figures/iv1-menu.png}
+\caption{Menu interactif, g\'en\'er\'e \`a partir de la liste \texttt{ALL\_SCANNERS}}
+\label{fig:menu}
+\end{figure}
+
+Avant l'ex\'ecution de chaque analyse, le nombre de fichiers r\'eellement s\'electionn\'es est affich\'e -- \guillemotleft~routage visible~\guillemotright, permettant de v\'erifier a priori ce qui va \^etre analys\'e plut\^ot que de le d\'ecouvrir dans le r\'esultat final.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering\vspace{3.4cm}\textit{[Capture d'\'ecran \`a ins\'erer -- sortie terminal montrant les lignes \guillemotleft~-{}-\textgreater\ N file(s) selected\guillemotright\ pour chaque analyse sur \texttt{sample\_vuln\_app}]}\vspace{3.4cm}}}
+% \includegraphics[width=0.92\linewidth]{figures/iv2-routage.png}
+\caption{Routage visible \`a l'ex\'ecution, avant que chaque analyseur ne s'ex\'ecute}
+\label{fig:routage-terminal}
+\end{figure}
+
+\section{Le rapport HTML et JSON}
+Le rapport HTML est autonome~: styles en ligne, graphique de r\'epartition des s\'ev\'erit\'es dessin\'e en SVG directement par le programme Python, \textbf{aucun JavaScript et aucune ressource externe charg\'ee} -- propri\'et\'e v\'erifi\'ee par un test qui inspecte le fichier produit. Le rapport JSON porte exactement les m\^emes donn\'ees, pour une exploitation automatis\'ee.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering\vspace{3.6cm}\textit{[Capture d'\'ecran \`a ins\'erer -- vue d'ensemble de \texttt{report.html} : tableau de routage, graphique par s\'ev\'erit\'e, bandeau des vuln\'erabilit\'es activement exploit\'ees]}\vspace{3.6cm}}}
+% \includegraphics[width=0.92\linewidth]{figures/iv3-rapport-vue-ensemble.png}
+\caption{Vue d'ensemble du rapport HTML g\'en\'er\'e}
+\label{fig:rapport-vue}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.92\linewidth}{\centering\vspace{3.6cm}\textit{[Capture d'\'ecran \`a ins\'erer -- fiche d\'etaill\'ee d'une vuln\'erabilit\'e, par exemple l'injection SQL de \texttt{public/login.php}, montrant l'extrait de code, le CWE, la cat\'egorie OWASP et la remédiation]}\vspace{3.6cm}}}
+% \includegraphics[width=0.92\linewidth]{figures/iv4-fiche-vulnerabilite.png}
+\caption{Fiche d\'etaill\'ee d'une vuln\'erabilit\'e dans le rapport HTML}
+\label{fig:rapport-fiche}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{\'El\'ements du rapport et probl\`eme de lecture qu'ils \'evitent}
+\label{tab:rapport-elements}
+\begin{tabularx}{\linewidth}{@{}L L@{}}
+\toprule
+\tablehead \'El\'ement du rapport & Probl\`eme de lecture \'evit\'e \\
+\midrule
+Tableau des fichiers rout\'es & Surestimer la couverture r\'eelle de l'analyse \\
+Statut par analyse (ex\'ecut\'e / \'echou\'e / partiel) & Confondre \guillemotleft~z\'ero r\'esultat~\guillemotright\ avec \guillemotleft~analyse non effectu\'ee~\guillemotright \\
+Attribution par outil + confiance & Traiter un r\'esultat fond\'e sur un motif comme certain \\
+Extrait captur\'e au moment de l'analyse & Afficher un code qui a chang\'e depuis \\
+Masquage des secrets, y compris voisins & Faire fuiter un secret adjacent dans le contexte \\
+Statut d'exploitation r\'eelle (KEV/EPSS) & Traiter toutes les s\'ev\'erit\'es \guillemotleft~HIGH~\guillemotright\ comme \'equivalentes \\
+Section Limites & Laisser croire que le rapport est exhaustif \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Tests et validation}
+
+\subsection{Strat\'egie de test}
+La suite de tests combine des tests unitaires -- qui isolent chaque module avec des donn\'ees construites -- et des tests de bout en bout, qui ex\'ecutent r\'eellement Semgrep, Trivy et Gitleaks. Ces derniers sont ignor\'es individuellement si l'outil correspondant n'est pas install\'e sur la machine d'ex\'ecution, plut\^ot que de faire \'echouer artificiellement la suite compl\`ete.
+
+\subsection{Application vuln\'erable de d\'emonstration}
+\texttt{sample\_vuln\_app/} est une petite application volontairement vuln\'erable (PHP, JavaScript, Python, deux fichiers de verrouillage) servant de cible reproductible aux tests de bout en bout. Le fichier \texttt{composer.lock} y \'epingle d\'elib\'er\'ement \texttt{phpmailer/phpmailer} en version~5.2.16, associ\'ee \`a la CVE-2016-10033, r\'eellement pr\'esente dans le catalogue CISA~KEV~: ce choix permet de d\'emontrer, sur un cas authentique et non simul\'e, le bandeau de priorisation d\'ecrit en section~VI.
+
+\subsection{Couverture des tests}
+La suite compte au total \textbf{101~tests}, r\'epartis comme indiqu\'e au tableau~\ref{tab:tests}.
+
+\begin{table}[H]
+\centering
+\caption{R\'epartition des 101~tests automatis\'es par module}
+\label{tab:tests}
+\begin{tabularx}{\linewidth}{@{}L c@{}}
+\toprule
+\tablehead Fichier de test & Nombre de cas \\
+\midrule
+\texttt{test\_exploitability.py} & 17 \\
+\texttt{test\_scanners.py} & 16 \\
+\texttt{test\_main.py} & 13 \\
+\texttt{test\_reporter.py} & 13 \\
+\texttt{test\_e2e.py} (bout en bout, outils r\'eels) & 10 \\
+\texttt{test\_consolidator.py} & 9 \\
+\texttt{test\_excludes.py} & 6 \\
+\texttt{test\_router.py} & 5 \\
+\texttt{test\_collector.py} & 5 \\
+\texttt{test\_dependency\_usage.py} & 4 \\
+\texttt{test\_models.py} & 3 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{R\'esultats obtenus}
+Une ex\'ecution compl\`ete (\texttt{--all}) sur \texttt{sample\_vuln\_app} collecte 11~fichiers et produit, apr\`es fusion, \textbf{33~vuln\'erabilit\'es uniques}~: 7~depuis l'analyse PHP, 3~depuis l'analyse JavaScript, 2~depuis l'analyse Python, 18~depuis l'analyse des deux fichiers de verrouillage, et 3~secrets. Le routage observ\'e correspond exactement \`a la figure~\ref{fig:routage}.
+
+L'apport de la priorisation par exploitation r\'eelle est visible d\`es cette premi\`ere ex\'ecution~: parmi les 18~r\'esultats de d\'ependances, un seul -- \texttt{phpmailer/phpmailer}, CVE-2016-10033 -- figure dans le catalogue CISA~KEV, et remonte donc en t\^ete du rapport sous le bandeau \guillemotleft~\`a corriger en premier~\guillemotright, m\^eme si d'autres r\'esultats portent une s\'ev\'erit\'e \texttt{CRITICAL} attribu\'ee par l'outil. C'est exactement le comportement recherch\'e au chapitre~III~: la s\'ev\'erit\'e g\'en\'erique ne suffit pas \`a prioriser, l'exploitation r\'eelle observ\'ee le permet.
+
+Une ex\'ecution avec l'option \texttt{--offline} d\'esactive volontairement l'interrogation de CISA~KEV et FIRST~EPSS~: dans ce mode, chaque r\'esultat de d\'ependance porte le statut \guillemotleft~inconnu -- interrogation non effectu\'ee~\guillemotright\ plut\^ot que \guillemotleft~non exploit\'e~\guillemotright, conform\'ement \`a la r\`egle pos\'ee au chapitre~III. Un test v\'erifie explicitement ce comportement.
+
+L'ex\'ecution sur un projet r\'eel externe \`a \texttt{sample\_vuln\_app} sort du p\'erim\`etre du pr\'esent rapport, faute de capture d'\'ecran valid\'ee \`a inclure~; seule l'ex\'ecution sur l'application de d\'emonstration, enti\`erement reproductible, est document\'ee ici.
+
+\section{Limites constat\'ees}
+Aucun outil d'analyse statique ne peut garantir l'absence de vuln\'erabilit\'e~: c'est une limite th\'eorique, pas seulement pratique, puisque d\'ecider en g\'en\'eral si un programme poss\`ede une propri\'et\'e donn\'ee est ind\'ecidable. Le tableau~\ref{tab:limites} recense les limites observ\'ees concr\`etement pendant le stage et la mani\`ere dont chacune est trait\'ee dans le rapport.
+
+\begin{table}[H]
+\centering
+\caption{Limites constat\'ees, cause et traitement dans le rapport}
+\label{tab:limites}
+\begin{tabularx}{\linewidth}{@{}L L L@{}}
+\toprule
+\tablehead Limite & Cause & Traitement \\
+\midrule
+Faux positifs & D\'etection fond\'ee sur des motifs, sans compr\'ehension du contexte m\'etier & Niveau de confiance affich\'e, tri manuel requis \\
+Faux n\'egatifs mesur\'es & \texttt{eval()} en JavaScript, mot de passe faible entropie, traversal de chemin non d\'etect\'es (voir \texttt{sample\_vuln\_app/README.md}) & Document\'es explicitement, non dissimul\'es \\
+Couverture in\'egale entre langages & \texttt{md5()} d\'etect\'e en Python mais pas en PHP par les jeux de r\`egles gratuits & Signal\'e en section Limites \\
+\'Echec d'un outil & Base de vuln\'erabilit\'es Trivy non t\'el\'echargeable, par exemple & Statut \texttt{FAILED}, jamais \guillemotleft~z\'ero vuln\'erabilit\'e~\guillemotright \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Deux exemples pr\'ecis, mesur\'es sur \texttt{sample\_vuln\_app}, illustrent la deuxi\`eme ligne du tableau~: un appel \texttt{eval()} sur une entr\'ee utilisateur en JavaScript n'est d\'etect\'e par aucun des trois jeux de r\`egles Semgrep test\'es, et un mot de passe faible mais lisible (\texttt{'Pa55w0rd-hardcoded-in-source'}) \'echappe \`a Gitleaks, qui se fonde sur l'entropie de la valeur~: une cha\^ine qui ressemble \`a un mot du langage courant obtient un score d'entropie trop faible pour \^etre signal\'ee, alors qu'une cl\'e cod\'ee juste \`a c\^ot\'e, de forme al\'eatoire, est d\'etect\'ee imm\'ediatement. Ces r\'esultats n'ont pas \'et\'e corrig\'es pour \guillemotleft~am\'eliorer~\guillemotright\ artificiellement l'application de d\'emonstration~: ils constituent la d\'emonstration la plus concr\`ete de la section Limites du rapport.
+
+
+% ============================================================================
+% CONCLUSION GÉNÉRALE
+% ============================================================================
+\frontchapter{CONCLUSION G\'EN\'ERALE}
+
+Ce stage d'initiation a permis de concevoir et de r\'ealiser un outil en ligne de commande orchestrant trois analyseurs de s\'ecurit\'e statique -- Semgrep, Trivy et Gitleaks -- autour d'un principe simple~: acheminer \`a chaque outil exactement les fichiers qui le concernent, fusionner leurs r\'esultats sans perte, et restituer le tout dans un rapport qui documente ses propres limites plut\^ot que de les taire.
+
+L'int\'er\^et principal de cette d\'emarche d'orchestration, par rapport \`a l'utilisation isol\'ee de chaque outil, tient en deux points~: la consolidation \'evite \`a l'utilisateur de croiser manuellement trois formats de sortie diff\'erents, et l'enrichissement par les catalogues publics CISA~KEV et FIRST~EPSS transforme une liste de s\'ev\'erit\'es g\'en\'eriques en une v\'eritable priorisation, fond\'ee sur ce qui est effectivement exploit\'e dans le monde r\'eel. La principale force du travail r\'ealis\'e r\'eside dans cette combinaison de lisibilit\'e du code -- un flux de donn\'ees \`a sens unique, un module unique d'orchestration -- et d'honn\^etet\'e du rapport produit, valid\'ee par une suite de 101~tests automatis\'es incluant des ex\'ecutions r\'eelles des trois outils.
+
+Les limites, discut\'ees au chapitre~IV, ne sont pas des d\'efauts \`a corriger dans l'urgence mais des propri\'et\'es intrins\`eques \`a toute analyse statique~: elles sont assum\'ees et document\'ees plut\^ot que dissimul\'ees.
+
+Trois pistes de prolongement ont \'et\'e identifi\'ees mais volontairement laiss\'ees hors r\'ealisation, sous forme de points d'extension vides dans le package \texttt{extensions/}~: un moteur de recommandations assist\'e, un suivi d'historique entre analyses successives -- rendu peu co\^uteux par l'identit\'e stable d\'ej\`a en place sur chaque \texttt{Finding} -- et une corr\'elation entre r\'esultats de diff\'erents analyseurs, par exemple un secret cod\'e en dur dans le m\^eme fichier qu'une injection.
+
+Sur le plan personnel, ce stage a permis de mettre en pratique une d\'emarche de conception logicielle rigoureuse -- architecture explicite, tests syst\'ematiques, documentation continue -- ainsi qu'une premi\`ere exp\'erience concr\`ete des probl\'ematiques de s\'ecurit\'e applicative et des outils qui y r\'epondent dans l'industrie.
+
+
+% ============================================================================
+% RÉFÉRENCES BIBLIOGRAPHIQUES
+% ============================================================================
+\frontchapter{R\'EF\'ERENCES BIBLIOGRAPHIQUES}
+\begin{enumerate}[leftmargin=1.8em, itemsep=0.4em]
+\item OWASP FOUNDATION, \textit{OWASP Top~10:2021}, \url{https://owasp.org/Top10/}, 2021.
+\item MITRE CORPORATION, \textit{Common Weakness Enumeration (CWE)}, \url{https://cwe.mitre.org/}, consult\'e en 2026.
+\item MITRE CORPORATION, \textit{Common Attack Pattern Enumeration and Classification (CAPEC)}, \url{https://capec.mitre.org/}, consult\'e en 2026.
+\item NIST, \textit{National Vulnerability Database (NVD)}, \url{https://nvd.nist.gov/}, consult\'e en 2026.
+\item NIST, \textit{Secure Software Development Framework}, SP~800-218, \url{https://csrc.nist.gov/publications/detail/sp/800-218/final}, 2022.
+\item OWASP FOUNDATION, \textit{OWASP Application Security Verification Standard (ASVS)}, \url{https://owasp.org/www-project-application-security-verification-standard/}, consult\'e en 2026.
+\item FIRST.ORG, \textit{Exploit Prediction Scoring System (EPSS)}, \url{https://www.first.org/epss/}, consult\'e en 2026.
+\item CISA, \textit{Known Exploited Vulnerabilities Catalog}, \url{https://www.cisa.gov/known-exploited-vulnerabilities-catalog}, consult\'e en 2026.
+\item SEMGREP, INC., \textit{Semgrep Documentation}, \url{https://semgrep.dev/docs/}, consult\'e en 2026.
+\item AQUA SECURITY, \textit{Trivy Documentation}, \url{https://trivy.dev/}, consult\'e en 2026.
+\item GITLEAKS, \textit{Gitleaks Documentation}, \url{https://github.com/gitleaks/gitleaks}, consult\'e en 2026.
+\item ISO/IEC, \textit{ISO/IEC~27034 -- Application Security}, 2011--2020.
+\end{enumerate}
+
+
+% ============================================================================
+% ANNEXES
+% ============================================================================
+\frontchapter{ANNEXES}
+
+\section*{Annexe A -- Arborescence du d\'ep\^ot}
+\begin{lstlisting}[language=bash, caption={Arborescence simplifi\'ee du projet}]
+main.py                collector.py          router.py
+consolidator.py        knowledge.py          exploitability.py
+dependency_usage.py    reporter.py           reporter_template.html
+models.py               excludes.py
+scanners/
+  __init__.py  base.py  php_scanner.py  js_scanner.py
+  python_scanner.py  dependency_scanner.py  secrets_scanner.py
+extensions/
+  ai_advisor.py  history.py  correlation.py   (points d'extension vides)
+sample_vuln_app/        (application de demonstration)
+tests/                   (101 tests, dont test_e2e.py)
+\end{lstlisting}
+
+\section*{Annexe B -- Extraits de sortie brute des outils (raccourcis)}
+\begin{lstlisting}[caption={Extrait de sortie Semgrep (JSON)}]
+{"check_id": "php.lang.security.injection.tainted-sql-string",
+ "path": "public/login.php", "start": {"line": 11},
+ "extra": {"severity": "ERROR", "metadata": {"cwe": ["CWE-89"]}}}
+\end{lstlisting}
+\begin{lstlisting}[caption={Extrait de sortie Trivy (JSON)}]
+{"VulnerabilityID": "CVE-2016-10033", "PkgName": "phpmailer/phpmailer",
+ "InstalledVersion": "5.2.16", "Severity": "CRITICAL"}
+\end{lstlisting}
+\begin{lstlisting}[caption={Extrait de sortie Gitleaks (JSON, valeur masqu\'ee)}]
+{"RuleID": "aws-access-token", "File": "config/credentials.js",
+ "StartLine": 9, "Secret": "[REDACTED]"}
+\end{lstlisting}
+
+\section*{Annexe C -- Table CWE compl\`ete}
+La table compl\`ete des 30~correspondances CWE~$\to$~(OWASP, remédiation, sc\'enario) est impl\'ement\'ee dans \texttt{knowledge.py} et n'est pas reproduite ici par souci de concision~; le tableau~\ref{tab:cwe-owasp} du chapitre~II en pr\'esente un extrait repr\'esentatif.
+
+\section*{Annexe D -- Commandes utilis\'ees}
+\begin{lstlisting}[language=bash]
+python main.py sample_vuln_app --all --report reports
+python main.py sample_vuln_app --all --offline --report reports
+python -m pytest tests/ -q
+python -m pytest tests/ -q --ignore=tests/test_e2e.py
+\end{lstlisting}
+
+\end{document}

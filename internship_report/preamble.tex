@@ -1,0 +1,272 @@
+% preamble.tex -- mise en forme du rapport de stage ENSIASD
+% Times New Roman, 12 pt, interligne 1,5, marges 2,5 cm,
+% titres de chapitre 16 pt MAJUSCULES gras alignes a droite.
+% Palette : bleu clair (accent principal) + rouge sang fonce (accent
+% secondaire, discret) sur fond blanc -- sobre, dans l'esprit des
+% rapports techniques Apple / OpenAI.
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{mathptmx}
+  \usepackage{courier}
+\else
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX}
+  \setmainfont{Times New Roman}
+  \setmonofont{Courier New}[Scale=0.86]
+\fi
+
+\usepackage[french]{babel}
+\usepackage{csquotes}
+\usepackage[
+  a4paper,
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.5cm,
+  right=2.5cm
+]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,shapes.geometric,shadows.blur,backgrounds}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{needspace}
+\usepackage{etoolbox}
+\usepackage{ragged2e}
+\usepackage{xurl}
+\usepackage{pgfgantt}
+\usepackage{hyperref}
+
+% ---- palette : bleu clair + rouge sang (discret) sur blanc -----------------
+\definecolor{accentblue}{HTML}{2E6DA4}      % accent principal -- structure, liens
+\definecolor{bluedeep}{HTML}{1B4A73}        % titres de chapitre, texte fort en bleu
+\definecolor{bluesoft}{HTML}{AFC9E0}        % filets fins, fonds tres legers
+\definecolor{bluewash}{HTML}{EEF3F8}        % fond d'encadre "information"
+\definecolor{bloodred}{HTML}{7A1F2B}        % accent secondaire -- alerte, limite
+\definecolor{bloodredsoft}{HTML}{E7CACD}    % filet / fond tres leger, alerte
+\definecolor{bloodredwash}{HTML}{FBF0F1}    % fond d'encadre "limite / attention"
+\definecolor{ink}{HTML}{1B1B1D}             % texte courant, quasi noir
+\definecolor{muted}{HTML}{68686C}           % texte secondaire (pied de page)
+\definecolor{rulegray}{HTML}{DADADD}        % filets de tableaux
+\definecolor{codebg}{HTML}{F5F5F7}          % fond des extraits de code
+
+\color{ink}
+
+% ---- liens -------------------------------------------------------------------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=bluedeep,
+  citecolor=bluedeep,
+  urlcolor=bluedeep,
+  bookmarksnumbered=true,
+  pdftitle={Rapport de stage -- Orchestration d'outils d'analyse de securite statique},
+  pdfauthor={\AuthorName}
+}
+
+% ---- legendes : figures en dessous, tableaux au-dessus, 11 pt --------------
+\captionsetup{
+  font={small},
+  labelfont={it},
+  textfont={it},
+  justification=centering,
+  skip=6pt
+}
+\captionsetup[figure]{position=bottom, font={small,it}, labelfont={it}}
+\captionsetup[table]{position=top, font={small}, labelfont={bf}, textfont={}}
+\renewcommand{\thefigure}{\arabic{chapter}.\arabic{figure}}
+\renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}
+
+% ---- titres de chapitre (ENSIASD) ------------------------------------------
+% Nouvelle page, 16 pt, MAJUSCULES, gras, aligne a droite,
+% espacement avant 0 / apres 54 pt. Un filet bleu sobre en dessous.
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{bluedeep}\fontsize{16pt}{20pt}\selectfont}
+  {\filleft\color{accentblue}\fontsize{11pt}{14pt}\selectfont CHAPITRE \thechapter}
+  {8pt}
+  {\filleft\MakeUppercase}
+  [\vspace{8pt}{\color{accentblue}\titlerule[2.2pt]}\vspace{3pt}{\color{bloodredsoft}\titlerule[0.5pt]}]
+\titlespacing*{\chapter}{0pt}{0pt}{54pt}
+
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\bfseries\color{bluedeep}\fontsize{16pt}{20pt}\selectfont}
+  {}
+  {0pt}
+  {\filleft\MakeUppercase}
+  [\vspace{8pt}{\color{accentblue}\titlerule[2.2pt]}\vspace{3pt}{\color{bloodredsoft}\titlerule[0.5pt]}]
+\titlespacing*{name=\chapter,numberless}{0pt}{0pt}{54pt}
+
+% Titres de paragraphe : I, II, III -- 14 pt gras, avant/apres 12 pt
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
+
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{14pt}{18pt}\selectfont\color{ink}}
+  {\thesection.}{0.75em}{}
+\titlespacing*{\section}{0pt}{12pt}{12pt}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{12pt}{16pt}\selectfont\color{ink}}
+  {\thesubsection.}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{6pt}{6pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\fontsize{12pt}{16pt}\selectfont\color{ink}}
+  {\thesubsubsection.}{0.6em}{}
+\titlespacing*{\subsubsection}{0pt}{6pt}{6pt}
+
+% ---- table des matieres / listes -------------------------------------------
+\renewcommand{\cftchapfont}{\bfseries\color{bluedeep}}
+\renewcommand{\cftchappagefont}{\bfseries\color{bluedeep}}
+\renewcommand{\cftsecfont}{\color{ink}}
+\renewcommand{\cftsecpagefont}{\color{ink}}
+\renewcommand{\cftdot}{.}
+\renewcommand{\cftdotsep}{4.5}
+\setlength{\cftbeforechapskip}{8pt}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+
+% ---- en-tetes / pieds de page : numero en bas a droite ---------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.6pt}
+\renewcommand{\footrule}{{\color{bluesoft}\hrule width\headwidth height 0.6pt}}
+\fancyfoot[L]{\footnotesize\color{muted}\AuthorName}
+\fancyfoot[R]{\bfseries\color{bluedeep}\thepage}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.6pt}
+  \renewcommand{\footrule}{{\color{bluesoft}\hrule width\headwidth height 0.6pt}}
+  \fancyfoot[L]{\footnotesize\color{muted}\AuthorName}
+  \fancyfoot[R]{\bfseries\color{bluedeep}\thepage}
+}
+
+% Pages liminaires : pas de numerotation arabe visible
+\fancypagestyle{front}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+  \fancyfoot[R]{\color{bluesoft}\thepage}
+}
+
+% ---- listes -------------------------------------------------------------------
+\setlist[itemize]{leftmargin=1.4em, itemsep=0.25em, topsep=0.4em}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=0.25em, topsep=0.4em}
+
+% ---- extraits de code ----------------------------------------------------------
+\lstdefinestyle{code}{
+  basicstyle=\ttfamily\fontsize{10pt}{13pt}\selectfont\color{ink},
+  backgroundcolor=\color{codebg},
+  frame=tb,
+  rulecolor=\color{accentblue},
+  framesep=8pt,
+  xleftmargin=8pt,
+  xrightmargin=8pt,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  commentstyle=\color{muted}\itshape,
+  keywordstyle=\bfseries\color{bluedeep},
+  stringstyle=\color{bloodred},
+  morekeywords={class,def,return,from,import,if,else,for,in,None,True,False,self},
+}
+\lstset{style=code, gobble=0, captionpos=b}
+
+% The listings package scans its own captions/options character by
+% character under pdfLaTeX, and can choke on raw UTF-8 accented bytes
+% coming from inputenc (error: "Invalid UTF-8 byte sequence (\lst@EC)").
+% This table tells listings how to redraw every accented character our
+% French captions use, so it never has to guess.
+\lstset{
+  extendedchars=true,
+  literate=
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+    {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+    {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+    {ç}{{\c c}}1 {œ}{{\oe}}1
+    {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1 {À}{{\`A}}1 {Ç}{{\c C}}1
+}
+
+% ---- tableaux : en-tete bleu ---------------------------------------------------
+\newcommand{\tablehead}{\rowcolor{bluedeep}\color{white}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\arrayrulecolor{rulegray}
+
+% ---- encadres (information en bleu, limite/alerte en rouge sang) -----------
+\newenvironment{infobox}[1]{%
+  \par\needspace{4\baselineskip}
+  \begin{center}
+  \begin{tabularx}{\linewidth}{!{\color{accentblue}\vrule width 2.4pt}p{0.4cm}X}
+    & & \\[-0.5em]
+    & \multicolumn{1}{l}{\bfseries\color{bluedeep} #1} \\
+    & &
+  \end{tabularx}
+  \end{center}
+  \vspace{-1.6em}
+  \begin{tabularx}{\linewidth}{!{\color{accentblue}\vrule width 2.4pt}p{0.4cm}X}
+    & &
+}{%
+  \end{tabularx}
+  \vspace{0.4em}
+}
+
+\newenvironment{warnbox}[1]{%
+  \par\needspace{4\baselineskip}
+  \begin{center}
+  \begin{tabularx}{\linewidth}{!{\color{bloodred}\vrule width 2.4pt}p{0.4cm}X}
+    & & \\[-0.5em]
+    & \multicolumn{1}{l}{\bfseries\color{bloodred} #1} \\
+    & &
+  \end{tabularx}
+  \end{center}
+  \vspace{-1.6em}
+  \begin{tabularx}{\linewidth}{!{\color{bloodred}\vrule width 2.4pt}p{0.4cm}X}
+    & &
+}{%
+  \end{tabularx}
+  \vspace{0.4em}
+}
+
+% ---- utilitaires ----------------------------------------------------------------
+\newcommand{\tool}[1]{\texttt{#1}}
+\newcommand{\modfile}[1]{\texttt{#1}}
+
+\newcommand{\frontchapter}[1]{%
+  \clearpage
+  \thispagestyle{front}%
+  \chapter*{#1}%
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+% Corps du texte : justifie, Times 12 pt, interligne 1,5 (ENSIASD).
+\justifying
+\setlength{\parindent}{1.25em}
+\setlength{\parskip}{0.35em}
+
+\renewcommand{\contentsname}{TABLE DES MATI\`ERES}
+\renewcommand{\listfigurename}{LISTE DES FIGURES}
+\renewcommand{\listtablename}{LISTE DES TABLEAUX}
+\renewcommand{\bibname}{R\'EF\'ERENCES BIBLIOGRAPHIQUES}
